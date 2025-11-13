@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-c-i-lxxa=+^f14l82%@k22m!dtwchv=5&lna0r(dbny48g%91_
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'yourdomain.com',  # keep your domain
+    'filenest.onrender.com',  # keep your domain
     '13.228.225.19',
     '18.142.128.26',
     '54.254.162.138',
@@ -138,7 +138,7 @@ STATICFILES_DIRS = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://portfolio-v7fu.onrender.com',
+    'https://filenest.onrender.com',
 ]
 
 
