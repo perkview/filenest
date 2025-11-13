@@ -1,0 +1,49 @@
+{% extends 'base_dash.html' %}
+{% load static %}
+
+{% block title %}Profile | FileNest{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4">User Profile</h2>
+
+    <div class="row g-4">
+        <!-- Profile Card -->
+        <div class="col-md-4">
+            <div class="card shadow-sm p-4">
+                <div class="text-center mb-3">
+                    <img src="{% static 'images/default-avatar.png' %}" alt="Avatar" class="rounded-circle" width="120">
+                </div>
+                <h5 class="text-center fw-bold">{{ request.user.username }}</h5>
+                <p class="text-muted text-center">{{ request.user.email }}</p>
+                <div class="d-grid mt-3">
+                    <a href="/profile_edit/" class="btn btn-primary btn-block">Edit Profile</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Account Details -->
+        <div class="col-md-8">
+            <div class="card shadow-sm p-4">
+                <h5 class="mb-3 fw-bold">Account Details</h5>
+                <form method="POST" action="/profile_update/">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" value="{{ request.user.username }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email address</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ request.user.email }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Change Password</label>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Leave blank to keep current">
+                    </div>
+                    <button type="submit" class="btn btn-success">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

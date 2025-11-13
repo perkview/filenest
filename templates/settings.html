@@ -1,0 +1,102 @@
+{% extends 'base_dash.html' %}
+{% load static %}
+
+{% block title %}Settings | FileNest{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4">Settings</h2>
+
+    <div class="row g-4">
+        <!-- Sidebar Tabs -->
+        <div class="col-md-3">
+            <div class="list-group" id="settings-tabs" role="tablist">
+                <a class="list-group-item list-group-item-action active" id="privacy-tab" data-bs-toggle="list" href="#privacy" role="tab" aria-controls="privacy">Privacy</a>
+                <a class="list-group-item list-group-item-action" id="notifications-tab" data-bs-toggle="list" href="#notifications" role="tab" aria-controls="notifications">Notifications</a>
+                <a class="list-group-item list-group-item-action" id="account-tab" data-bs-toggle="list" href="#account" role="tab" aria-controls="account">Account</a>
+            </div>
+        </div>
+
+        <!-- Settings Content -->
+        <div class="col-md-9">
+            <div class="tab-content" id="settings-tabs-content">
+                <!-- Privacy Tab -->
+                <div class="tab-pane fade show active" id="privacy" role="tabpanel" aria-labelledby="privacy-tab">
+                    <div class="card shadow-sm p-4 mb-4">
+                        <h5 class="mb-3 fw-bold">Privacy Settings</h5>
+                        <form method="POST" action="/update_privacy/">
+                            {% csrf_token %}
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="cloud_mode" name="cloud_mode" {% if request.user.profile.cloud_mode %}checked{% endif %}>
+                                <label class="form-check-label" for="cloud_mode">Use Cloud AI Mode</label>
+                                <small class="text-muted d-block">Enable cloud processing for faster AI summaries. Local-only mode keeps data on your device.</small>
+                            </div>
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="data_retention" name="data_retention" {% if request.user.profile.data_retention %}checked{% endif %}>
+                                <label class="form-check-label" for="data_retention">Enable Auto Deletion</label>
+                                <small class="text-muted d-block">Automatically delete uploaded documents after 30 days.</small>
+                            </div>
+                            <button type="submit" class="btn btn-success">Save Privacy Settings</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Notifications Tab -->
+                <div class="tab-pane fade" id="notifications" role="tabpanel" aria-labelledby="notifications-tab">
+                    <div class="card shadow-sm p-4 mb-4">
+                        <h5 class="mb-3 fw-bold">Notifications</h5>
+                        <form method="POST" action="/update_notifications/">
+                            {% csrf_token %}
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="email_alerts" name="email_alerts" {% if request.user.profile.email_alerts %}checked{% endif %}>
+                                <label class="form-check-label" for="email_alerts">Email Alerts</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="push_alerts" name="push_alerts" {% if request.user.profile.push_alerts %}checked{% endif %}>
+                                <label class="form-check-label" for="push_alerts">Push Notifications</label>
+                            </div>
+                            <button type="submit" class="btn btn-success mt-2">Save Notification Settings</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Account Tab -->
+                <div class="tab-pane fade" id="account" role="tabpanel" aria-labelledby="account-tab">
+                    <div class="card shadow-sm p-4 mb-4">
+                        <h5 class="mb-3 fw-bold">Account Settings</h5>
+                        <form method="POST" action="/update_account/">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" class="form-control" id="username" name="username" value="{{ request.user.username }}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" value="{{ request.user.email }}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">New Password</label>
+                                <input type="password" class="form-control" id="password" name="password" placeholder="Leave blank to keep current password">
+                            </div>
+                            <button type="submit" class="btn btn-success">Save Account Settings</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Optional JavaScript for tabs -->
+<script>
+    const triggerTabList = [].slice.call(document.querySelectorAll('#settings-tabs a'))
+    triggerTabList.forEach(function (triggerEl) {
+        const tabTrigger = new bootstrap.Tab(triggerEl)
+
+        triggerEl.addEventListener('click', function (event) {
+            event.preventDefault()
+            tabTrigger.show()
+        })
+    })
+</script>
+{% endblock %}

@@ -1,0 +1,87 @@
+{% extends 'base_dash.html' %}
+{% block title %}Upload Document | FileNest{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="text-center mb-5">
+    <h2 class="fw-bold text-primary">Upload Your Document</h2>
+    <p class="text-muted fs-5">Drag & drop your file or select from your device. Supported: PDF, DOCX, TXT. Max size: 50MB.</p>
+  </div>
+
+  <!-- Upload Form -->
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      {% if success %}
+      <div class="alert alert-success rounded-4 shadow-sm" role="alert">
+        <strong>Upload Complete!</strong> {{ uploaded_file_name }} has been successfully uploaded.
+      </div>
+      {% endif %}
+
+      <form method="POST" enctype="multipart/form-data" id="uploadForm">
+        {% csrf_token %}
+        <div class="mb-3 p-5 border border-dashed rounded-4 text-center bg-white shadow-sm"
+             id="dropArea"
+             style="cursor: pointer;">
+          <p class="text-muted mb-0">Drag & drop your file here or click to select</p>
+          <input type="file" name="document" id="fileInput" class="form-control d-none" required>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress mt-3" style="height: 25px; display:none;" id="progressWrapper">
+          <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" 
+               role="progressbar" 
+               style="width: 0%" 
+               id="uploadProgress">0%</div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary w-100 mt-4">Upload Document</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  const dropArea = document.getElementById('dropArea');
+  const fileInput = document.getElementById('fileInput');
+  const progressWrapper = document.getElementById('progressWrapper');
+  const uploadProgress = document.getElementById('uploadProgress');
+
+  dropArea.addEventListener('click', () => fileInput.click());
+  dropArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropArea.classList.add('border-primary');
+  });
+  dropArea.addEventListener('dragleave', () => dropArea.classList.remove('border-primary'));
+  dropArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropArea.classList.remove('border-primary');
+    fileInput.files = e.dataTransfer.files;
+  });
+
+  document.getElementById('uploadForm').addEventListener('submit', function(e) {
+    progressWrapper.style.display = 'block';
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += 10;
+      uploadProgress.style.width = progress + '%';
+      uploadProgress.innerText = progress + '%';
+      if (progress >= 100) {
+        clearInterval(interval);
+      }
+    }, 100);
+  });
+</script>
+
+<style>
+  body {
+    background-color: #F5F5F5;
+  }
+  .border-dashed {
+    border: 2px dashed #007BFF;
+  }
+  .border-dashed:hover {
+    background-color: #F0F8FF;
+  }
+</style>
+{% endblock %}

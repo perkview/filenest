@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}How It Works | AI Document Summarizer + Q&A{% endblock %}
+
+{% block hero %}
+<div class="hero mb-5">
+    <div class="row align-items-center">
+        <div class="col-lg-7">
+            <h1 class="display-6 fw-bold">How AI Document Summarizer Works</h1>
+            <p class="lead text-muted">Understand our workflow from uploading documents to instant summaries and Q&A insights.</p>
+            <div class="mt-4">
+                <a href="/upload/" class="btn btn-primary btn-lg me-2">Upload a document</a>
+                <a href="#workflow" class="btn btn-outline-secondary btn-lg">See the steps</a>
+            </div>
+        </div>
+        <div class="col-lg-5 d-none d-lg-block">
+            <div class="card card-feature">
+                <div class="card-body">
+                    <img src="{% static 'images/mockup-workflow.png' %}" alt="Workflow mockup" class="img-fluid" style="border-radius:8px;">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Workflow Steps -->
+<section id="workflow" class="py-5">
+  <div class="container">
+    <h2 class="fw-bold text-center mb-5">Step-by-Step Process</h2>
+    <div class="row text-center g-4">
+      <div class="col-md-4">
+        <div class="p-3">
+          <div class="mb-3"><i class="bi bi-upload fs-1 text-primary"></i></div>
+          <h5>1. Upload Your Document</h5>
+          <p class="text-muted">Drag and drop or select your files. Smart validation ensures supported formats and safe uploads.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="p-3">
+          <div class="mb-3"><i class="bi bi-lightning-charge fs-1 text-success"></i></div>
+          <h5>2. AI Summarizes Instantly</h5>
+          <p class="text-muted">Our AI analyzes and produces summaries in multiple modes—brief, medium, or detailed—within seconds.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="p-3">
+          <div class="mb-3"><i class="bi bi-chat-dots fs-1 text-danger"></i></div>
+          <h5>3. Ask Questions & Export Insights</h5>
+          <p class="text-muted">Interact with your document using natural-language queries and export answers or summaries easily.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="py-5 bg-light text-center">
+  <div class="container">
+    <h2 class="fw-bold mb-4">Ready to Try It Yourself?</h2>
+    <p class="text-muted mb-4">Upload your first document in seconds and experience AI-powered summarization.</p>
+    <a href="/upload/" class="btn btn-primary btn-lg">Get Started Free</a>
+  </div>
+</section>
+{% endblock %}

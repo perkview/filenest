@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Security & Privacy | AI Document Summarizer + Q&A{% endblock %}
+
+{% block hero %}
+<div class="hero mb-5">
+    <div class="row align-items-center">
+        <div class="col-lg-7">
+            <h1 class="display-6 fw-bold">Security & Privacy You Can Trust</h1>
+            <p class="lead text-muted">Your documents remain private. Choose cloud AI or local-only processing, with full encryption and control.</p>
+            <div class="mt-4">
+                <a href="/upload/" class="btn btn-primary btn-lg me-2">Upload Securely</a>
+                <a href="#features-security" class="btn btn-outline-secondary btn-lg">Learn More</a>
+            </div>
+        </div>
+        <div class="col-lg-5 d-none d-lg-block">
+            <div class="card card-feature">
+                <div class="card-body">
+                    <img src="{% static 'images/mockup-security.png' %}" alt="Security mockup" class="img-fluid" style="border-radius:8px;">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Security Features -->
+<section id="features-security" class="py-5">
+  <div class="container text-center">
+    <h2 class="fw-bold mb-5">Privacy & Security Features</h2>
+    <div class="row justify-content-center g-4">
+      <div class="col-md-3">
+        <div class="card p-4 shadow-sm border-0">
+          <i class="bi bi-lock fs-2 text-success mb-3"></i>
+          <h5 class="fw-bold">Encrypted Storage</h5>
+          <p class="text-muted small">All uploaded data is encrypted during transit and at rest, protecting your sensitive information.</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card p-4 shadow-sm border-0">
+          <i class="bi bi-shield-check fs-2 text-primary mb-3"></i>
+          <h5 class="fw-bold">Local-Only Mode</h5>
+          <p class="text-muted small">Process documents entirely on your system if you prefer no cloud interaction.</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card p-4 shadow-sm border-0">
+          <i class="bi bi-trash3 fs-2 text-danger mb-3"></i>
+          <h5 class="fw-bold">Full Control</h5>
+          <p class="text-muted small">Easily delete documents or set retention preferences from your account settings.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="py-5 bg-light text-center">
+  <div class="container">
+    <h2 class="fw-bold mb-4">Start Securing Your Documents Today</h2>
+    <p class="text-muted mb-4">Experience AI-powered summarization with complete control over your data.</p>
+    <a href="/upload/" class="btn btn-primary btn-lg">Upload Now</a>
+  </div>
+</section>
+{% endblock %}

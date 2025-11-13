@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Welcome | AI Document Summarizer + Q&A{% endblock %}
+
+{% block hero %}
+<div class="hero mb-5">
+    <div class="row align-items-center">
+        <div class="col-lg-7">
+            <h1 class="display-6 fw-bold">AI Document Summarizer & Q&A</h1>
+            <p class="lead text-muted">Instantly summarize documents, ask natural-language questions, and export insights — with privacy-first options.</p>
+            <div class="mt-4">
+                <a href="/upload/" class="btn btn-primary btn-lg me-2">Upload a document</a>
+                <a href="#how" class="btn btn-outline-secondary btn-lg">How it works</a>
+            </div>
+            <p class="muted-small mt-3">Trusted by early adopters • TLS & encryption • Local-only mode available</p>
+        </div>
+        <div class="col-lg-5 d-none d-lg-block">
+            <div class="card card-feature">
+                <div class="card-body">
+                    <img src="{% static 'images/mockup-dashboard.png' %}" alt="Dashboard mockup" class="img-fluid" style="border-radius:8px;">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Features Section -->
+<section id="features" class="py-5">
+  <div class="container text-center">
+    <h2 class="fw-bold mb-4">Powerful Features to Simplify Your Work</h2>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="card card-feature p-4 h-100">
+          <div class="mb-3"><i class="bi bi-file-earmark-text fs-1 text-primary"></i></div>
+          <h5>Automatic Summarization</h5>
+          <p class="text-muted">Generate short, medium, or detailed summaries instantly from any PDF or document.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card card-feature p-4 h-100">
+          <div class="mb-3"><i class="bi bi-chat-dots fs-1 text-success"></i></div>
+          <h5>Interactive Q&A</h5>
+          <p class="text-muted">Ask natural-language questions and get precise, cited answers with confidence scores.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card card-feature p-4 h-100">
+          <div class="mb-3"><i class="bi bi-cloud-arrow-down fs-1 text-danger"></i></div>
+          <h5>Export Options</h5>
+          <p class="text-muted">Download summaries and transcripts in PDF or TXT formats with one click.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works Section -->
+<section id="how" class="py-5 bg-light">
+  <div class="container">
+    <h2 class="fw-bold text-center mb-5">How It Works</h2>
+    <div class="row text-center g-4">
+      <div class="col-md-4">
+        <div class="p-3">
+          <div class="mb-3"><i class="bi bi-upload fs-1 text-primary"></i></div>
+          <h5>1. Upload Your Document</h5>
+          <p class="text-muted">Drag and drop or select files. Smart validation ensures supported formats and safe uploads.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="p-3">
+          <div class="mb-3"><i class="bi bi-lightning-charge fs-1 text-success"></i></div>
+          <h5>2. Get Summaries Instantly</h5>
+          <p class="text-muted">AI analyzes and summarizes your document in multiple modes—executive, brief, or detailed.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="p-3">
+          <div class="mb-3"><i class="bi bi-question-circle fs-1 text-danger"></i></div>
+          <h5>3. Ask Questions & Export Insights</h5>
+          <p class="text-muted">Query your documents conversationally and export answers or summaries for reference.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Security Section -->
+<section id="security" class="py-5">
+  <div class="container text-center">
+    <h2 class="fw-bold mb-4">Privacy & Security You Can Trust</h2>
+    <p class="text-muted mb-5">Your documents remain private. Choose between cloud AI or local-only mode. All files are encrypted and deletable anytime.</p>
+    <div class="row justify-content-center">
+      <div class="col-md-3">
+        <div class="card p-4 shadow-sm border-0">
+          <i class="bi bi-lock fs-2 text-success mb-2"></i>
+          <h6 class="fw-bold">Encrypted Storage</h6>
+          <p class="text-muted small">All uploaded data is encrypted in transit and at rest.</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card p-4 shadow-sm border-0">
+          <i class="bi bi-shield-check fs-2 text-primary mb-2"></i>
+          <h6 class="fw-bold">Local-Only Mode</h6>
+          <p class="text-muted small">Keep processing on your system for complete privacy.</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card p-4 shadow-sm border-0">
+          <i class="bi bi-trash3 fs-2 text-danger mb-2"></i>
+          <h6 class="fw-bold">Full Control</h6>
+          <p class="text-muted small">Easily delete data or set retention preferences from settings.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Call-to-Action Section -->
+<section class="py-5 bg-light text-center">
+  <div class="container">
+    <h2 class="fw-bold mb-4">Ready to Experience Smart Summarization?</h2>
+    <p class="text-muted mb-4">Upload your first document in seconds and see how quickly AI can transform your workflow.</p>
+    <a href="/upload/" class="btn btn-primary btn-lg">Get Started Free</a>
+  </div>
+</section>
+{% endblock %}

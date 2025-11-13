@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}Login / Sign Up | FileNest{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold text-primary">Welcome to FileNest</h2>
+        <p class="text-muted">Securely manage and access your documents anytime, anywhere.</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <!-- Login Form -->
+        <div class="col-md-5 bg-white shadow-sm rounded-3 p-4 mx-2">
+            <h4 class="text-dark mb-4 text-center">Login</h4>
+            <form method="POST" action="{% url 'login' %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="loginEmail" class="form-label">Email</label>
+                    <input type="email" name="email" class="form-control" id="loginEmail" placeholder="Enter your email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="loginPassword" class="form-label">Password</label>
+                    <input type="password" name="password" class="form-control" id="loginPassword" placeholder="Enter your password" required>
+                </div>
+                <div class="text-end">
+                    <a href="#" class="small text-decoration-none text-primary">Forgot Password?</a>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 mt-3">Login</button>
+            </form>
+        </div>
+
+        <!-- Sign Up Form -->
+        <div class="col-md-5 bg-white shadow-sm rounded-3 p-4 mx-2 mt-4 mt-md-0">
+            <h4 class="text-dark mb-4 text-center">Sign Up</h4>
+            <form method="POST" action="{% url 'signup' %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="signupName" class="form-label">Full Name</label>
+                    <input type="text" name="name" class="form-control" id="signupName" placeholder="Enter your full name" required>
+                </div>
+                <div class="mb-3">
+                    <label for="signupEmail" class="form-label">Email</label>
+                    <input type="email" name="email" class="form-control" id="signupEmail" placeholder="Enter your email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="signupPassword" class="form-label">Password</label>
+                    <input type="password" name="password1" class="form-control" id="signupPassword" placeholder="Create a password" required>
+                </div>
+                <div class="mb-3">
+                    <label for="signupPassword2" class="form-label">Confirm Password</label>
+                    <input type="password" name="password2" class="form-control" id="signupPassword2" placeholder="Re-enter your password" required>
+                </div>
+                <button type="submit" class="btn btn-success w-100 mt-3">Create Account</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background-color: #F5F5F5;
+    }
+    .form-control:focus {
+        border-color: #007BFF;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+</style>
+{% endblock %}

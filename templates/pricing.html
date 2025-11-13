@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Pricing | AI Document Summarizer + Q&A{% endblock %}
+
+{% block hero %}
+<div class="hero mb-5">
+    <div class="row align-items-center">
+        <div class="col-lg-7">
+            <h1 class="display-6 fw-bold">Choose the Plan That Fits Your Needs</h1>
+            <p class="lead text-muted">Flexible pricing for individuals and businesses. Get started free or upgrade for more features.</p>
+            <div class="mt-4">
+                <a href="/upload/" class="btn btn-primary btn-lg me-2">Start Free</a>
+                <a href="#plans" class="btn btn-outline-secondary btn-lg">View Plans</a>
+            </div>
+        </div>
+        <div class="col-lg-5 d-none d-lg-block">
+            <div class="card card-feature">
+                <div class="card-body">
+                    <img src="{% static 'images/mockup-pricing.png' %}" alt="Pricing mockup" class="img-fluid" style="border-radius:8px;">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Pricing Plans -->
+<section id="plans" class="py-5 bg-light">
+  <div class="container">
+    <h2 class="fw-bold text-center mb-5">Our Pricing Plans</h2>
+    <div class="row g-4 justify-content-center">
+
+      <!-- Free Plan -->
+      <div class="col-md-4">
+        <div class="card p-4 h-100 shadow-sm">
+          <div class="text-center mb-4">
+            <h5 class="fw-bold">Free</h5>
+            <p class="muted-small">Perfect for trying out AI summarization</p>
+            <span class="h3 fw-bold">$0</span><small class="text-muted"> / month</small>
+          </div>
+          <ul class="list-unstyled mb-4 text-muted">
+            <li>Upload up to 5 documents/month</li>
+            <li>Basic summarization modes</li>
+            <li>Q&A for single documents</li>
+          </ul>
+          <div class="d-grid">
+            <a href="/upload/" class="btn btn-primary">Get Started Free</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pro Plan -->
+      <div class="col-md-4">
+        <div class="card p-4 h-100 shadow-sm border-primary">
+          <div class="text-center mb-4">
+            <h5 class="fw-bold">Pro</h5>
+            <p class="muted-small">For frequent users and professionals</p>
+            <span class="h3 fw-bold">$19</span><small class="text-muted"> / month</small>
+          </div>
+          <ul class="list-unstyled mb-4 text-muted">
+            <li>Unlimited document uploads</li>
+            <li>All summarization modes</li>
+            <li>Full Q&A with confidence scores</li>
+            <li>Export summaries & transcripts</li>
+          </ul>
+          <div class="d-grid">
+            <a href="/upload/" class="btn btn-primary">Upgrade to Pro</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Enterprise Plan -->
+      <div class="col-md-4">
+        <div class="card p-4 h-100 shadow-sm">
+          <div class="text-center mb-4">
+            <h5 class="fw-bold">Enterprise</h5>
+            <p class="muted-small">For teams and businesses with custom needs</p>
+            <span class="h3 fw-bold">Custom</span>
+          </div>
+          <ul class="list-unstyled mb-4 text-muted">
+            <li>Team accounts & role management</li>
+            <li>Priority support & SLAs</li>
+            <li>Custom integrations</li>
+            <li>Local-only processing option</li>
+          </ul>
+          <div class="d-grid">
+            <a href="/contact/" class="btn btn-outline-primary">Contact Sales</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="py-5 text-center">
+  <div class="container">
+    <h2 class="fw-bold mb-4">Start Using AI Summarizer Today</h2>
+    <p class="text-muted mb-4">Upload your first document for free and explore the power of AI-assisted summarization.</p>
+    <a href="/upload/" class="btn btn-primary btn-lg">Get Started Free</a>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block title %}Features | FileNest{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <!-- Header -->
+  <div class="text-center mb-5">
+    <h1 class="fw-bold text-primary">Powerful Features That Make File Management Simple</h1>
+    <p class="text-muted fs-5">FileNest helps you organize, secure, and collaborate on documents effortlessly.</p>
+  </div>
+
+  <!-- Feature Cards -->
+  <div class="row g-4">
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm border-0 rounded-4">
+        <div class="card-body text-center p-4">
+          <div class="display-4 text-primary mb-3">
+            <i class="bi bi-cloud-arrow-up-fill"></i>
+          </div>
+          <h5 class="fw-bold mb-2">Cloud Storage</h5>
+          <p class="text-muted">Upload, access, and manage your files from anywhere with secure cloud storage powered by FileNest.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm border-0 rounded-4">
+        <div class="card-body text-center p-4">
+          <div class="display-4 text-success mb-3">
+            <i class="bi bi-lock-fill"></i>
+          </div>
+          <h5 class="fw-bold mb-2">Data Security</h5>
+          <p class="text-muted">End-to-end encryption ensures that only you and your team have access to your files — no one else.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm border-0 rounded-4">
+        <div class="card-body text-center p-4">
+          <div class="display-4 text-warning mb-3">
+            <i class="bi bi-people-fill"></i>
+          </div>
+          <h5 class="fw-bold mb-2">Team Collaboration</h5>
+          <p class="text-muted">Share files, manage access, and work together in real-time — improving workflow and productivity.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm border-0 rounded-4">
+        <div class="card-body text-center p-4">
+          <div class="display-4 text-danger mb-3">
+            <i class="bi bi-lightning-charge-fill"></i>
+          </div>
+          <h5 class="fw-bold mb-2">Fast Uploads</h5>
+          <p class="text-muted">Experience lightning-fast file uploads with intelligent compression and server optimization.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm border-0 rounded-4">
+        <div class="card-body text-center p-4">
+          <div class="display-4 text-info mb-3">
+            <i class="bi bi-graph-up-arrow"></i>
+          </div>
+          <h5 class="fw-bold mb-2">Analytics Dashboard</h5>
+          <p class="text-muted">Track file usage, team activity, and storage performance through an elegant analytics dashboard.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm border-0 rounded-4">
+        <div class="card-body text-center p-4">
+          <div class="display-4 text-secondary mb-3">
+            <i class="bi bi-phone-fill"></i>
+          </div>
+          <h5 class="fw-bold mb-2">Mobile-Friendly</h5>
+          <p class="text-muted">Manage your workspace seamlessly on mobile devices — FileNest is fully responsive and intuitive.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  body {
+    background-color: #F5F5F5;
+  }
+  .card:hover {
+    transform: translateY(-5px);
+    transition: all 0.3s ease;
+  }
+</style>
+{% endblock %}
