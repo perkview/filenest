@@ -290,7 +290,11 @@ def send_contact(request):
 
 @login_required
 def process_selected(request, doc_id):
-    # Fetch the document
+    if not OPENROUTER_API_KEY:
+        messages.error(request, "Server misconfiguration: OpenRouter API key is missing.")
+        return redirect("upload_pdf")
+
+    # Fetch document
     document = get_object_or_404(
         ProcessedDocument,
         id=doc_id,
@@ -299,26 +303,23 @@ def process_selected(request, doc_id):
     )
 
     # -------------------------------
-    # Check subscription & free user limit
+    # Check subscription & limits
     # -------------------------------
     user_extra, _ = UserExtra.objects.get_or_create(user=request.user)
     now = timezone.now()
 
-    # Subscription expired or inactive
     if not user_extra.subscription_active or (user_extra.subscription_end and user_extra.subscription_end < now):
         messages.error(request, "Your subscription has expired or is inactive. Please renew to process documents.")
         return redirect("settings_page")
 
-    # Free user daily limit: max 2 per day
     if user_extra.plan == 'free':
-        today = now.date()
-        processed_today = ProcessedDocument.objects.filter(
+        today_count = ProcessedDocument.objects.filter(
             user=request.user,
-            created_at__date=today,
+            created_at__date=now.date(),
             deleted_by_user=False
         ).count()
-        if processed_today >= 2:
-            messages.error(request, "Free plan users can only process 2 documents per day. Upgrade to Pro for unlimited processing.")
+        if today_count >= 2:
+            messages.error(request, "Free plan users can process a maximum of 2 documents per day. Upgrade to Pro for unlimited access.")
             return redirect("settings_page")
 
     pdf_path = document.pdf_file.path
@@ -327,42 +328,32 @@ def process_selected(request, doc_id):
     # Step 1: Read PDF
     # -------------------------------
     try:
-        text_content = ""
         reader = PyPDF2.PdfReader(pdf_path)
-
-        for page in reader.pages:
-            page_text = page.extract_text()
-            if page_text:
-                text_content += page_text + "\n"
+        text_content = "\n".join(page.extract_text() or "" for page in reader.pages)
 
         if not text_content.strip():
             messages.error(request, "Could not extract text from PDF.")
             return redirect("upload_pdf")
 
-        # Count words and pages
-        word_count = len(text_content.split())
-        page_count = len(reader.pages)
-
-        document.num_words = word_count
-        document.num_pages = page_count
+        # Update document stats
+        document.num_words = len(text_content.split())
+        document.num_pages = len(reader.pages)
         document.processed_count += 1
         document.save()
 
-        # -------------------------------
-        # Update UserExtra stats
-        # -------------------------------
+        # Update user stats
         user_extra.total_pdfs_processed += 1
-        user_extra.total_words_processed += word_count
-        user_extra.total_pages_processed += page_count
-        user_extra.total_points_earned += word_count // 100
+        user_extra.total_words_processed += document.num_words
+        user_extra.total_pages_processed += document.num_pages
+        user_extra.total_points_earned += document.num_words // 100
         user_extra.save()
 
     except Exception as e:
-        messages.error(request, f"PDF read error: {e}")
+        messages.error(request, f"PDF processing error: {e}")
         return redirect("upload_pdf")
 
     # -------------------------------
-    # Step 2: Split Text
+    # Step 2: Split text into chunks
     # -------------------------------
     def split_text(txt, max_words=800):
         words = txt.split()
@@ -377,6 +368,7 @@ def process_selected(request, doc_id):
     all_generated_text = ""
     for idx, chunk in enumerate(chunks, start=1):
         prompt = f"""
+        
 You are an AI assistant. Summarize the following text into roughly one-third of its length and generate questions that cover all key aspects.
 
 Text:
@@ -409,34 +401,41 @@ Formatting Rules:
 8. Summary → Main Points → Fill-in-the-Blank Questions → True or False Questions → Comprehension Questions.
 9. Place a line break after every heading by inserting the newline character ": \n".
 10. Place a line break before every point in the main points by inserting the newline character "\n", also add a bullet before each point.
-"""
 
-        response = requests.post(
-            API_URL,
-            headers={
-                "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-                "Content-Type": "application/json"
-            },
-            json={
-                "model": MODEL,
-                "messages": [{"role": "user", "content": prompt}],
-                "temperature": 0.7
-            }
-        )
+        """
 
-        if response.status_code != 200:
-            messages.error(request, f"API failed: {response.text}")
+        try:
+            response = requests.post(
+                API_URL,
+                headers={
+                    "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+                    "Content-Type": "application/json"
+                },
+                json={
+                    "model": MODEL,
+                    "messages": [{"role": "user", "content": prompt}],
+                    "temperature": 0.7
+                },
+                timeout=60
+            )
+            response.raise_for_status()
+            generated_text = response.json()['choices'][0]['message']['content']
+            all_generated_text += f"\n\n--- Part {idx} ---\n\n{generated_text}"
+
+        except requests.exceptions.RequestException as e:
+            messages.error(request, f"OpenRouter API error: {e}")
             return redirect("upload_pdf")
-
-        generated_text = response.json()['choices'][0]['message']['content']
-        all_generated_text += f"\n\n--- Part {idx} ---\n\n" + generated_text
+        except KeyError:
+            messages.error(request, "Unexpected API response format.")
+            return redirect("upload_pdf")
 
     # -------------------------------
     # Step 4: Save Generated PDF
     # -------------------------------
+    output_dir = "media/generated_pdfs"
+    os.makedirs(output_dir, exist_ok=True)
     output_name = f"processed_{document.id}.pdf"
-    output_path = os.path.join("media/generated_pdfs", output_name)
-    os.makedirs("media/generated_pdfs", exist_ok=True)
+    output_path = os.path.join(output_dir, output_name)
 
     c = canvas.Canvas(output_path, pagesize=letter)
     x_margin, y_margin = 50, 12
@@ -444,11 +443,8 @@ Formatting Rules:
     y = 750
 
     wrapper = textwrap.TextWrapper(width=95)
-    paragraphs = all_generated_text.split("\n\n")
-
-    for paragraph in paragraphs:
-        lines = wrapper.wrap(paragraph)
-        for line in lines:
+    for paragraph in all_generated_text.split("\n\n"):
+        for line in wrapper.wrap(paragraph):
             if y < 50:
                 c.showPage()
                 y = 750
@@ -463,6 +459,7 @@ Formatting Rules:
 
     messages.success(request, "Processing complete! Download available.")
     return redirect("upload_pdf")
+
 
 
 @login_required(login_url='/login/')
@@ -490,4 +487,5 @@ def settings_page(request):
 
 
     return render(request, 'settings.html', context)
+
 
