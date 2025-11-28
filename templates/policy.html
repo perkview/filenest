@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- ===========================
+    PAGE TITLE + INTRO
+=========================== -->
+<section class="py-5 text-center">
+    <div class="container">
+        <h1 class="fw-bold mb-3" style="color:#007BFF;">Privacy Policy</h1>
+        <p class="lead text-muted">
+            Your privacy is important to us. Learn how we collect, use, and protect your data.
+        </p>
+    </div>
+</section>
+
+<!-- ===========================
+    POLICY SECTIONS
+=========================== -->
+<section class="py-5">
+    <div class="container">
+
+        <!-- Information We Collect -->
+        <div class="mb-5">
+            <div class="fs-2 text-primary mb-2">📄</div>
+            <h3 class="fw-bold mb-2">Information We Collect</h3>
+            <p class="text-muted">
+                We may collect:
+            </p>
+            <ul class="text-muted">
+                <li>Personal information (name, email, account details)</li>
+                <li>Uploaded PDF content for processing</li>
+                <li>Usage data (IP address, browser type, pages visited)</li>
+            </ul>
+        </div>
+
+        <!-- How We Use Your Information -->
+        <div class="mb-5">
+            <div class="fs-2 text-primary mb-2">⚙️</div>
+            <h3 class="fw-bold mb-2">How We Use Your Information</h3>
+            <p class="text-muted">
+                Your information is used to:
+            </p>
+            <ul class="text-muted">
+                <li>Process and return uploaded PDFs</li>
+                <li>Improve AI models and services</li>
+                <li>Provide customer support and respond to inquiries</li>
+                <li>Maintain security and prevent abuse</li>
+            </ul>
+        </div>
+
+        <!-- Cookies & Tracking -->
+        <div class="mb-5">
+            <div class="fs-2 text-primary mb-2">🍪</div>
+            <h3 class="fw-bold mb-2">Cookies & Tracking</h3>
+            <p class="text-muted">
+                We use cookies to enhance your experience, analyze usage, and improve our services. You can manage cookie preferences in your browser.
+            </p>
+        </div>
+
+        <!-- Data Security -->
+        <div class="mb-5">
+            <div class="fs-2 text-primary mb-2">🔒</div>
+            <h3 class="fw-bold mb-2">Data Security</h3>
+            <p class="text-muted">
+                We implement robust security measures including encryption and secure storage. Your uploaded files are processed temporarily and deleted automatically after completion.
+            </p>
+        </div>
+
+        <!-- Sharing & Third Parties -->
+        <div class="mb-5">
+            <div class="fs-2 text-primary mb-2">🤝</div>
+            <h3 class="fw-bold mb-2">Sharing & Third Parties</h3>
+            <p class="text-muted">
+                We do not sell your personal information. Data may be shared with service providers only for processing purposes, under strict confidentiality agreements.
+            </p>
+        </div>
+
+        <!-- User Rights -->
+        <div class="mb-5">
+            <div class="fs-2 text-primary mb-2">🛡️</div>
+            <h3 class="fw-bold mb-2">Your Rights</h3>
+            <p class="text-muted">
+                You have the right to:
+            </p>
+            <ul class="text-muted">
+                <li>Access, correct, or delete your personal data</li>
+                <li>Opt-out of marketing communications</li>
+                <li>Request information about how your data is processed</li>
+                <li>Contact support for any privacy concerns</li>
+            </ul>
+        </div>
+
+        <!-- Changes to Policy -->
+        <div class="mb-5">
+            <div class="fs-2 text-primary mb-2">📝</div>
+            <h3 class="fw-bold mb-2">Updates to Privacy Policy</h3>
+            <p class="text-muted">
+                We may update this policy periodically. The last updated date will be noted at the top. Users will be notified of significant changes.
+            </p>
+        </div>
+
+    </div>
+</section>
+
+<!-- ===========================
+    CONTACT CTA
+=========================== -->
+<section class="py-5 text-center bg-light">
+    <div class="container">
+        <h2 class="fw-bold mb-3" style="color:#007BFF;">Have questions about our privacy policy?</h2>
+        <a href="{% url 'contact' %}" class="btn btn-primary btn-lg px-4 py-3">Contact Support</a>
+    </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,194 @@
+{% extends "base_dashboard.html" %}
+{% block content %}
+
+<!-- ===========================
+     PAGE TITLE
+=========================== -->
+<section class="py-5 text-center">
+    <div class="container">
+        <h1 class="fw-bold mb-3" style="color:#007BFF;">
+            Upload Your PDF & Generate a Smart Study Pack
+        </h1>
+        <p class="lead" style="color:#555;">
+            Upload a PDF file and receive a summary, key points, and AI-generated questions instantly.
+        </p>
+    </div>
+</section>
+
+<!-- ===========================
+     UPLOAD FORM
+=========================== -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="p-4 bg-white rounded shadow">
+
+                    <!-- Upload Form -->
+                    <form method="POST" action="{% url 'upload_pdf' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="pdfFile" class="form-label fw-bold">Select PDF File</label>
+                            <input class="form-control" type="file" id="pdfFile" name="pdf_file" accept=".pdf" required>
+                            <small class="form-text text-muted">Upload only PDF files.</small>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100 py-2">
+                            Upload & Process
+                        </button>
+                    </form>
+
+                    <!-- Logs -->
+                    {% if messages %}
+                    <div class="mt-4 p-3 bg-light border rounded" style="max-height: 200px; overflow-y: auto;">
+                        <h5 class="fw-bold" style="color:#007BFF;">Logs</h5>
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} py-2 my-2 mb-1" role="alert">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===========================
+     TABLE OF DOCUMENTS
+=========================== -->
+<section class="py-5">
+    <div class="container">
+        <h4 class="fw-bold mb-4" style="color:#007BFF;">Your Uploaded Documents</h4>
+
+        {% if documents %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Select</th>
+                        <th>File Name</th>
+                        <th>Pages</th>
+                        <th>Words</th>
+                        <th>Uploaded On</th>
+                        <th>Status</th>
+                        <th>Downloads</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for doc in documents %}
+                    <tr>
+                        <!-- Select Radio -->
+                        <td class="text-center">
+                            <input type="radio" name="selected_doc" form="processForm" value="{{ doc.id }}" required>
+                        </td>
+
+                        <!-- File Name -->
+                        <td>{{ doc.pdf_file.name|slice:"15:" }}</td>
+
+                        <!-- Stats -->
+                        <td>{{ doc.num_pages }}</td>
+                        <td>{{ doc.num_words }}</td>
+                        <td>{{ doc.created_at|date:"M d, Y - H:i" }}</td>
+
+                        <!-- Processed Status -->
+                        <td>
+                            {% if doc.processed_count > 0 %}
+                                <span class="badge bg-success">Processed</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Not Processed</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Download Buttons -->
+                        <td class="d-flex flex-column gap-1">
+                            <!-- Original PDF -->
+                            <a href="{{ doc.pdf_file.url }}" class="btn btn-sm btn-primary w-100" download>
+                                Original PDF
+                            </a>
+
+                            <!-- Generated PDF -->
+                            {% if doc.generated_pdf %}
+                                <a href="{{ doc.generated_pdf.url }}" class="btn btn-sm btn-success w-100" download>
+                                    Generated PDF
+                                </a>
+                            {% endif %}
+
+                            <!-- Optional Generated Components -->
+                            {% if doc.generated_summary %}
+                                <a href="{{ doc.generated_summary.url }}" class="btn btn-sm btn-success w-100" download>
+                                    Summary
+                                </a>
+                            {% endif %}
+                            {% if doc.generated_keypoints %}
+                                <a href="{{ doc.generated_keypoints.url }}" class="btn btn-sm btn-warning w-100" download>
+                                    Key Points
+                                </a>
+                            {% endif %}
+                            {% if doc.generated_questions %}
+                                <a href="{{ doc.generated_questions.url }}" class="btn btn-sm btn-info w-100" download>
+                                    Questions
+                                </a>
+                            {% endif %}
+                        </td>
+
+                        <!-- Delete Button -->
+                        <td>
+                            <form method="POST" action="{% url 'upload_pdf' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="delete_id" value="{{ doc.id }}">
+                                <button type="submit" class="btn btn-sm btn-danger w-100">
+                                    Delete
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Process Selected Button -->
+        <form method="POST" id="processForm" onsubmit="return setProcessAction()">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary btn-lg mt-3 w-100">
+                Process Selected Document
+            </button>
+        </form>
+
+        <script>
+            function setProcessAction() {
+                const selected = document.querySelector('input[name="selected_doc"]:checked');
+                if (!selected) {
+                    alert('Please select a document to process.');
+                    return false;
+                }
+                document.getElementById('processForm').action = `/process-selected/${selected.value}/`;
+                return true;
+            }
+        </script>
+
+        {% else %}
+            <p class="text-muted">No documents uploaded yet.</p>
+        {% endif %}
+    </div>
+</section>
+
+<!-- ===========================
+     TIPS
+=========================== -->
+<section class="py-5">
+    <div class="container text-center">
+        <h4 class="fw-bold mb-3" style="color:#007BFF;">Tips for Best Results</h4>
+        <ul class="list-unstyled text-muted">
+            <li>Ensure your PDF is clear and text-based.</li>
+            <li>Large PDFs may take slightly longer to process.</li>
+            <li>You will receive a summary, key points, and AI-generated questions.</li>
+        </ul>
+    </div>
+</section>
+
+{% endblock %}

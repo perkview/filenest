@@ -1,102 +1,134 @@
-{% extends 'base_dash.html' %}
-{% load static %}
-
-{% block title %}Settings | FileNest{% endblock %}
-
+{% extends "base_dashboard.html" %}
 {% block content %}
-<div class="container-fluid">
-    <h2 class="mb-4">Settings</h2>
 
-    <div class="row g-4">
-        <!-- Sidebar Tabs -->
-        <div class="col-md-3">
-            <div class="list-group" id="settings-tabs" role="tablist">
-                <a class="list-group-item list-group-item-action active" id="privacy-tab" data-bs-toggle="list" href="#privacy" role="tab" aria-controls="privacy">Privacy</a>
-                <a class="list-group-item list-group-item-action" id="notifications-tab" data-bs-toggle="list" href="#notifications" role="tab" aria-controls="notifications">Notifications</a>
-                <a class="list-group-item list-group-item-action" id="account-tab" data-bs-toggle="list" href="#account" role="tab" aria-controls="account">Account</a>
-            </div>
-        </div>
-
-        <!-- Settings Content -->
-        <div class="col-md-9">
-            <div class="tab-content" id="settings-tabs-content">
-                <!-- Privacy Tab -->
-                <div class="tab-pane fade show active" id="privacy" role="tabpanel" aria-labelledby="privacy-tab">
-                    <div class="card shadow-sm p-4 mb-4">
-                        <h5 class="mb-3 fw-bold">Privacy Settings</h5>
-                        <form method="POST" action="/update_privacy/">
-                            {% csrf_token %}
-                            <div class="form-check form-switch mb-3">
-                                <input class="form-check-input" type="checkbox" id="cloud_mode" name="cloud_mode" {% if request.user.profile.cloud_mode %}checked{% endif %}>
-                                <label class="form-check-label" for="cloud_mode">Use Cloud AI Mode</label>
-                                <small class="text-muted d-block">Enable cloud processing for faster AI summaries. Local-only mode keeps data on your device.</small>
-                            </div>
-                            <div class="form-check form-switch mb-3">
-                                <input class="form-check-input" type="checkbox" id="data_retention" name="data_retention" {% if request.user.profile.data_retention %}checked{% endif %}>
-                                <label class="form-check-label" for="data_retention">Enable Auto Deletion</label>
-                                <small class="text-muted d-block">Automatically delete uploaded documents after 30 days.</small>
-                            </div>
-                            <button type="submit" class="btn btn-success">Save Privacy Settings</button>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Notifications Tab -->
-                <div class="tab-pane fade" id="notifications" role="tabpanel" aria-labelledby="notifications-tab">
-                    <div class="card shadow-sm p-4 mb-4">
-                        <h5 class="mb-3 fw-bold">Notifications</h5>
-                        <form method="POST" action="/update_notifications/">
-                            {% csrf_token %}
-                            <div class="form-check mb-2">
-                                <input class="form-check-input" type="checkbox" id="email_alerts" name="email_alerts" {% if request.user.profile.email_alerts %}checked{% endif %}>
-                                <label class="form-check-label" for="email_alerts">Email Alerts</label>
-                            </div>
-                            <div class="form-check mb-2">
-                                <input class="form-check-input" type="checkbox" id="push_alerts" name="push_alerts" {% if request.user.profile.push_alerts %}checked{% endif %}>
-                                <label class="form-check-label" for="push_alerts">Push Notifications</label>
-                            </div>
-                            <button type="submit" class="btn btn-success mt-2">Save Notification Settings</button>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Account Tab -->
-                <div class="tab-pane fade" id="account" role="tabpanel" aria-labelledby="account-tab">
-                    <div class="card shadow-sm p-4 mb-4">
-                        <h5 class="mb-3 fw-bold">Account Settings</h5>
-                        <form method="POST" action="/update_account/">
-                            {% csrf_token %}
-                            <div class="mb-3">
-                                <label for="username" class="form-label">Username</label>
-                                <input type="text" class="form-control" id="username" name="username" value="{{ request.user.username }}">
-                            </div>
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="email" name="email" value="{{ request.user.email }}">
-                            </div>
-                            <div class="mb-3">
-                                <label for="password" class="form-label">New Password</label>
-                                <input type="password" class="form-control" id="password" name="password" placeholder="Leave blank to keep current password">
-                            </div>
-                            <button type="submit" class="btn btn-success">Save Account Settings</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+<section class="py-5 text-center">
+    <div class="container">
+        <h1 class="fw-bold mb-3" style="color:#007BFF;">Account Settings</h1>
+        <p class="lead text-muted">Manage your profile, subscription, and view activity statistics.</p>
     </div>
+</section>
+
+<!-- ===========================
+     MESSAGES
+=========================== -->
+<div class="container">
+    {% if messages %}
+        <div class="mb-4">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
 </div>
 
-<!-- Optional JavaScript for tabs -->
-<script>
-    const triggerTabList = [].slice.call(document.querySelectorAll('#settings-tabs a'))
-    triggerTabList.forEach(function (triggerEl) {
-        const tabTrigger = new bootstrap.Tab(triggerEl)
+<!-- ===========================
+     USER PROFILE / ACCOUNT INFO
+=========================== -->
+<section class="py-4">
+    <div class="container">
+        <div class="row g-4">
 
-        triggerEl.addEventListener('click', function (event) {
-            event.preventDefault()
-            tabTrigger.show()
-        })
-    })
-</script>
+            <div class="col-lg-6">
+                <div class="p-4 bg-white rounded shadow">
+                    <h5 class="fw-bold mb-3">Profile Information</h5>
+                    <table class="table table-borderless">
+                        <tr>
+                            <th>Username:</th>
+                            <td>{{ user.username }}</td>
+                        </tr>
+                        <tr>
+                            <th>Full Name:</th>
+                            <td>{{ user_extra.full_name|default:user.get_full_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Email:</th>
+                            <td>{{ user.email }}</td>
+                        </tr>
+                        <tr>
+                            <th>Date Joined:</th>
+                            <td>{{ user.date_joined|date:"M d, Y" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Last Login:</th>
+                            <td>{{ user.last_login|date:"M d, Y H:i" }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="p-4 bg-white rounded shadow">
+                    <h5 class="fw-bold mb-3">Subscription & Plan</h5>
+                    <table class="table table-borderless">
+                        <tr>
+                            <th>Plan:</th>
+                            <td>{{ user_extra.plan|capfirst }}</td>
+                        </tr>
+                        <tr>
+                            <th>Active:</th>
+                            <td>{{ user_extra.subscription_active|yesno:"Yes,No" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Start Date:</th>
+                            <td>{% if user_extra.subscription_start %}{{ user_extra.subscription_start|date:"M d, Y" }}{% else %}-{% endif %}</td>
+                        </tr>
+                        <tr>
+                            <th>End Date:</th>
+                            <td>{% if user_extra.subscription_end %}{{ user_extra.subscription_end|date:"M d, Y" }}{% else %}-{% endif %}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ===========================
+     USER ACTIVITY STATISTICS
+=========================== -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h5 class="fw-bold mb-3 text-center">Activity Statistics</h5>
+        <div class="row g-4 text-center">
+
+            <div class="col-md-3">
+                <div class="p-4 bg-white rounded shadow">
+                    <div class="fs-1 mb-2">📄</div>
+                    <h6>Total PDFs</h6>
+                    <h3 class="fw-bold">{{ total_pdfs }}</h3>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="p-4 bg-white rounded shadow">
+                    <div class="fs-1 mb-2">📝</div>
+                    <h6>Total Words</h6>
+                    <h3 class="fw-bold">{{ total_words }}</h3>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="p-4 bg-white rounded shadow">
+                    <div class="fs-1 mb-2">📑</div>
+                    <h6>Total Pages</h6>
+                    <h3 class="fw-bold">{{ total_pages }}</h3>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="p-4 bg-white rounded shadow">
+                    <div class="fs-1 mb-2">✅</div>
+                    <h6>Generated PDFs</h6>
+                    <h3 class="fw-bold">{{ generated_pdfs_count }}</h3>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
 {% endblock %}

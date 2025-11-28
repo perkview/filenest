@@ -1,93 +1,149 @@
-{% extends 'base_dash.html' %}
-{% load static %}
-
-{% block title %}Dashboard | AI Document Summarizer + Q&A{% endblock %}
-
+{% extends "base_dashboard.html" %}
 {% block content %}
-<div class="container-fluid py-4">
-    <!-- Quick Stats -->
-    <div class="row g-4 mb-4">
-        <div class="col-md-3">
-            <div class="card shadow-sm p-3 text-center">
-                <h5 class="fw-bold">Documents Uploaded</h5>
-                <p class="h3 text-primary">12</p>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card shadow-sm p-3 text-center">
-                <h5 class="fw-bold">Tokens Used</h5>
-                <p class="h3 text-success">5,420</p>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card shadow-sm p-3 text-center">
-                <h5 class="fw-bold">Recent Activity</h5>
-                <p class="h6 text-muted">Last upload: 2 hours ago</p>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card shadow-sm p-3 text-center">
-                <h5 class="fw-bold">Account Status</h5>
-                <p class="h6 text-muted">Pro Plan</p>
-            </div>
+
+<!-- ===========================
+     WELCOME HERO / BANNER
+=========================== -->
+<section class="py-5 bg-light text-center">
+    <div class="container">
+        <h1 class="fw-bold mb-3" style="color:#007BFF;">
+            Welcome, {{ user.first_name }}!
+        </h1>
+        <p class="lead mb-4 text-muted">
+            Ready to create your next smart study pack?
+        </p>
+        <a href="{% url 'upload_pdf' %}" class="btn btn-primary btn-lg px-4 py-3">
+            <i class="bi bi-file-earmark-arrow-up me-2"></i> Upload PDF
+        </a>
+
+        <div class="mt-4 text-muted">
+            Total PDFs processed: {{ total_pdfs }} | Points earned: {{ points_earned }}
         </div>
     </div>
+</section>
 
-    <!-- Upload CTA -->
-    <div class="row mb-4">
-        <div class="col">
-            <div class="card shadow-sm p-4 text-center bg-primary text-white">
-                <h5 class="fw-bold">Upload a New Document</h5>
-                <p class="text-white-50">Get instant AI summaries and Q&A insights.</p>
-                <a href="/upload/" class="btn btn-light btn-lg">Upload Document</a>
+
+
+<!-- ===========================
+     RECENT PDFs / ACTIVITY
+=========================== -->
+<section class="py-5">
+    <div class="container">
+        <h3 class="fw-bold mb-4">Recent PDFs Processed</h3>
+
+        <!-- Table for desktop -->
+        <div class="table-responsive d-none d-md-block">
+            <table class="table table-striped align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>PDF Name</th>
+                        <th>Date Uploaded</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pdf in recent_pdfs %}
+                    <tr>
+                        <td>{{ pdf.name }}</td>
+                        <td>{{ pdf.uploaded_at|date:"M d, Y - H:i" }}</td>
+                        <td>
+                            {% if pdf.status == "Processed" %}
+                                <span class="badge bg-success">{{ pdf.status }}</span>
+                            {% else %}
+                                <span class="badge bg-secondary">{{ pdf.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ pdf.download_url }}" class="btn btn-sm btn-primary me-2">Download</a>
+                            {% if pdf.generated_pdf_url %}
+                            <a href="{{ pdf.generated_pdf_url }}" class="btn btn-sm btn-success">Generated PDF</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted">No PDFs processed yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Cards for mobile -->
+        <div class="d-block d-md-none">
+            {% for pdf in recent_pdfs %}
+            <div class="card mb-3">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-file-earmark-text fs-3 me-3 text-primary"></i>
+                        <div>
+                            <h6 class="mb-1">{{ pdf.name }}</h6>
+                            <small class="text-muted">{{ pdf.status }}</small>
+                        </div>
+                    </div>
+                    <a href="{{ pdf.download_url }}" class="btn btn-sm btn-primary">Download</a>
+                </div>
             </div>
+            {% empty %}
+            <p class="text-center text-muted">No PDFs processed yet.</p>
+            {% endfor %}
         </div>
     </div>
+</section>
 
-    <!-- Recent Documents -->
-    <div class="row">
-        <div class="col">
-            <div class="card shadow-sm p-3">
-                <h5 class="fw-bold mb-3">Recent Documents</h5>
-                <div class="table-responsive">
-                    <table class="table align-middle">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Name</th>
-                                <th>Pages</th>
-                                <th>Uploaded</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for doc in documents %}
-                            <tr>
-                                <td>{{ doc.filename }}</td>
-                                <td>{{ doc.pages }}</td>
-                                <td>{{ doc.upload_ts|date:"M d, Y H:i" }}</td>
-                                <td>
-                                    {% if doc.status == 'completed' %}
-                                        <span class="badge bg-success">Completed</span>
-                                    {% else %}
-                                        <span class="badge bg-warning text-dark">{{ doc.status|title }}</span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    <a href="{% url 'view_document' doc.id %}" class="btn btn-outline-primary btn-sm">View</a>
-                                    <a href="{% url 'download_document' doc.id %}" class="btn btn-outline-success btn-sm">Download</a>
-                                </td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="5" class="text-center text-muted">No documents uploaded yet.</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+<!-- ===========================
+     USER STATISTICS / CARDS
+=========================== -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h3 class="fw-bold mb-4">Your Study Pack Statistics</h3>
+        <div class="row g-4 text-center">
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card p-3">
+                    <h6>Total PDFs Processed</h6>
+                    <span class="fs-3 fw-bold">{{ total_pdfs }}</span>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card p-3">
+                    <h6>Total Words Processed</h6>
+                    <span class="fs-3 fw-bold">{{ total_words }}</span>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card p-3">
+                    <h6>Total Pages Processed</h6>
+                    <span class="fs-3 fw-bold">{{ total_pages }}</span>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card p-3">
+                    <h6>Total Points Earned</h6>
+                    <span class="fs-3 fw-bold">{{ points_earned }}</span>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>
+
+<!-- ===========================
+     TIPS / RECOMMENDATIONS
+=========================== -->
+<section class="py-5">
+    <div class="container">
+        <h3 class="fw-bold mb-4">Pro Tips to Maximize Learning</h3>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">Use generated summaries for quick revision.</li>
+            <li class="list-group-item">Convert key points into flashcards for memory retention.</li>
+            <li class="list-group-item">Organize study packs by topics for structured learning.</li>
+            <li class="list-group-item">Track your weekly progress to stay consistent.</li>
+        </ul>
+    </div>
+</section>
+
 {% endblock %}

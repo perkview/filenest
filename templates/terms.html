@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- ===========================
+    PAGE TITLE + INTRO
+=========================== -->
+<section class="py-5 text-center">
+    <div class="container">
+        <h1 class="fw-bold mb-3" style="color:#007BFF;">Terms & Conditions</h1>
+        <p class="lead text-muted">
+            Please read these terms carefully before using our AI PDF study pack platform.
+        </p>
+    </div>
+</section>
+
+<!-- ===========================
+    TERMS SECTIONS
+=========================== -->
+<section class="py-5">
+    <div class="container">
+
+        <!-- Acceptance of Terms -->
+        <div class="mb-5">
+            <h3 class="fw-bold mb-2">Acceptance of Terms</h3>
+            <p class="text-muted">
+                By accessing or using our website, you agree to comply with these terms and any applicable laws.
+            </p>
+        </div>
+
+        <!-- User Responsibilities -->
+        <div class="mb-5">
+            <h3 class="fw-bold mb-2">User Responsibilities</h3>
+            <p class="text-muted">Users agree to:</p>
+            <ul class="text-muted">
+                <li>Provide accurate information during registration</li>
+                <li>Respect intellectual property rights</li>
+                <li>Not use the service for unlawful purposes</li>
+                <li>Avoid uploading harmful or malicious files</li>
+            </ul>
+        </div>
+
+        <!-- Account Security -->
+        <div class="mb-5">
+            <h3 class="fw-bold mb-2">Account Security</h3>
+            <p class="text-muted">
+                Users are responsible for maintaining the confidentiality of their account credentials. Any activity under your account is your responsibility.
+            </p>
+        </div>
+
+        <!-- Service Usage -->
+        <div class="mb-5">
+            <h3 class="fw-bold mb-2">Service Usage</h3>
+            <p class="text-muted">
+                The platform is provided “as-is” without warranties. Users agree not to misuse or attempt to disrupt services.
+            </p>
+        </div>
+
+        <!-- Intellectual Property -->
+        <div class="mb-5">
+            <h3 class="fw-bold mb-2">Intellectual Property</h3>
+            <p class="text-muted">
+                All content, AI models, and platform materials are owned by FileNest or licensed to it. Users may not copy or redistribute without permission.
+            </p>
+        </div>
+
+        <!-- Limitation of Liability -->
+        <div class="mb-5">
+            <h3 class="fw-bold mb-2">Limitation of Liability</h3>
+            <p class="text-muted">
+                FileNest is not liable for indirect, incidental, or consequential damages resulting from use of the platform. Users assume full responsibility for their actions.
+            </p>
+        </div>
+
+        <!-- Changes to Terms -->
+        <div class="mb-5">
+            <h3 class="fw-bold mb-2">Changes to Terms</h3>
+            <p class="text-muted">
+                We may update these terms periodically. Users are encouraged to review this page regularly. Continued use constitutes acceptance of updates.
+            </p>
+        </div>
+
+        <!-- Governing Law -->
+        <div class="mb-5">
+            <h3 class="fw-bold mb-2">Governing Law</h3>
+            <p class="text-muted">
+                These terms are governed by the laws of [Your Country]. Disputes will be resolved under the jurisdiction of relevant courts.
+            </p>
+        </div>
+
+    </div>
+</section>
+
+<!-- ===========================
+    CONTACT CTA
+=========================== -->
+<section class="py-5 text-center bg-light">
+    <div class="container">
+        <h2 class="fw-bold mb-3" style="color:#007BFF;">Have questions about these terms?</h2>
+        <a href="{% url 'contact' %}" class="btn btn-primary btn-lg px-4 py-3">Contact Support</a>
+    </div>
+</section>
+
+{% endblock %}

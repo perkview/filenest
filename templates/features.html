@@ -1,97 +1,286 @@
-{% extends 'base.html' %}
-{% block title %}Features | FileNest{% endblock %}
-
+{% extends "base.html" %}
+{% load static %}
 {% block content %}
-<div class="container py-5">
-  <!-- Header -->
-  <div class="text-center mb-5">
-    <h1 class="fw-bold text-primary">Powerful Features That Make File Management Simple</h1>
-    <p class="text-muted fs-5">FileNest helps you organize, secure, and collaborate on documents effortlessly.</p>
-  </div>
 
-  <!-- Feature Cards -->
-  <div class="row g-4">
-    <div class="col-md-4">
-      <div class="card h-100 shadow-sm border-0 rounded-4">
-        <div class="card-body text-center p-4">
-          <div class="display-4 text-primary mb-3">
-            <i class="bi bi-cloud-arrow-up-fill"></i>
-          </div>
-          <h5 class="fw-bold mb-2">Cloud Storage</h5>
-          <p class="text-muted">Upload, access, and manage your files from anywhere with secure cloud storage powered by FileNest.</p>
-        </div>
-      </div>
+<!-- ===========================
+    PAGE TITLE + INTRO
+=========================== -->
+<section class="py-5 text-center">
+    <div class="container">
+        <h1 class="fw-bold mb-3" style="color:#007BFF;">
+            Everything You Need to Turn Any PDF Into a Smart Study Pack
+        </h1>
+        <p class="lead" style="color:#555;">
+            Powerful AI features designed for students, teachers, researchers, and busy professionals.
+        </p>
     </div>
+</section>
 
-    <div class="col-md-4">
-      <div class="card h-100 shadow-sm border-0 rounded-4">
-        <div class="card-body text-center p-4">
-          <div class="display-4 text-success mb-3">
-            <i class="bi bi-lock-fill"></i>
-          </div>
-          <h5 class="fw-bold mb-2">Data Security</h5>
-          <p class="text-muted">End-to-end encryption ensures that only you and your team have access to your files — no one else.</p>
+
+<!-- ===========================
+    FEATURE BLOCKS (LARGE CARDS)
+=========================== -->
+<section class="py-5 bg-light">
+    <div class="container">
+
+        <div class="row g-4">
+
+            <!-- Feature 1 -->
+            <div class="col-md-4">
+                <div class="bg-white p-4 rounded shadow h-100 text-center">
+                    <div class="fs-1 mb-3">📄✨</div>
+                    <h4 class="fw-bold">Instant AI Summary</h4>
+                    <p class="text-muted">
+                        Concise, accurate, and structured summaries from lengthy PDF documents.
+                        Works for academic, business, and research content.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="col-md-4">
+                <div class="bg-white p-4 rounded shadow h-100 text-center">
+                    <div class="fs-1 mb-3">📌</div>
+                    <h4 class="fw-bold">Main Points Extraction</h4>
+                    <p class="text-muted">
+                        Automatically highlights essential ideas, definitions, timelines,
+                        and important concepts.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="col-md-4">
+                <div class="bg-white p-4 rounded shadow h-100 text-center">
+                    <div class="fs-1 mb-3">❓</div>
+                    <h4 class="fw-bold">Smart Question Generator</h4>
+                    <p class="text-muted">
+                        Generates comprehension questions based on the content to help deepen
+                        understanding or create quizzes instantly.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Feature 4 -->
+            <div class="col-md-4">
+                <div class="bg-white p-4 rounded shadow h-100 text-center">
+                    <div class="fs-1 mb-3">✔️❌</div>
+                    <h4 class="fw-bold">True / False Questions</h4>
+                    <p class="text-muted">
+                        Produces clear True/False statements strictly based on PDF content
+                        with built-in hallucination checks.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Feature 5 -->
+            <div class="col-md-4">
+                <div class="bg-white p-4 rounded shadow h-100 text-center">
+                    <div class="fs-1 mb-3">✏️</div>
+                    <h4 class="fw-bold">Fill-in-the-Blank Items</h4>
+                    <p class="text-muted">
+                        Converts key sentences into blanks to reinforce learning and test memory.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Feature 6 -->
+            <div class="col-md-4">
+                <div class="bg-white p-4 rounded shadow h-100 text-center">
+                    <div class="fs-1 mb-3">📥📄</div>
+                    <h4 class="fw-bold">Export as Organized PDF</h4>
+                    <p class="text-muted">
+                        All summaries, key points, and generated questions are compiled into
+                        a professionally formatted PDF download.
+                    </p>
+                </div>
+            </div>
+
         </div>
-      </div>
-    </div>
 
-    <div class="col-md-4">
-      <div class="card h-100 shadow-sm border-0 rounded-4">
-        <div class="card-body text-center p-4">
-          <div class="display-4 text-warning mb-3">
-            <i class="bi bi-people-fill"></i>
-          </div>
-          <h5 class="fw-bold mb-2">Team Collaboration</h5>
-          <p class="text-muted">Share files, manage access, and work together in real-time — improving workflow and productivity.</p>
+    </div>
+</section>
+
+
+<!-- ===========================
+    HOW IT WORKS (DETAILED)
+=========================== -->
+<section class="py-5">
+    <div class="container">
+
+        <h2 class="fw-bold text-center mb-5" style="color:#007BFF;">
+            How It Works
+        </h2>
+
+        <div class="row align-items-center">
+
+            <!-- Steps -->
+            <div class="col-lg-6">
+
+                <div class="mb-4">
+                    <h4 class="fw-bold">Step 1 — Upload Your PDF</h4>
+                    <p class="text-muted">
+                        Drag-and-drop or choose a file directly from your device.
+                    </p>
+                </div>
+
+                <div class="mb-4">
+                    <h4 class="fw-bold">Step 2 — AI Processes the Content</h4>
+                    <p class="text-muted">
+                        The system extracts text, summarizes, finds key points,
+                        and generates questions using advanced NLP.
+                    </p>
+                </div>
+
+                <div class="mb-4">
+                    <h4 class="fw-bold">Step 3 — Download Your Study Pack</h4>
+                    <p class="text-muted">
+                        Receive a ready-to-use PDF with organized summaries,
+                        key points, and all generated questions.
+                    </p>
+                </div>
+
+            </div>
+
+            <!-- Illustration -->
+            <div class="col-lg-6 text-center">
+                <img src="{% static 'features.png' %}"
+                     class="img-fluid rounded shadow" alt="AI Workflow Illustration">
+            </div>
+
         </div>
-      </div>
-    </div>
 
-    <div class="col-md-4">
-      <div class="card h-100 shadow-sm border-0 rounded-4">
-        <div class="card-body text-center p-4">
-          <div class="display-4 text-danger mb-3">
-            <i class="bi bi-lightning-charge-fill"></i>
-          </div>
-          <h5 class="fw-bold mb-2">Fast Uploads</h5>
-          <p class="text-muted">Experience lightning-fast file uploads with intelligent compression and server optimization.</p>
+    </div>
+</section>
+
+
+<!-- ===========================
+    COMPARISON TABLE
+=========================== -->
+<section class="py-5 bg-light">
+    <div class="container">
+
+        <h2 class="fw-bold text-center mb-4" style="color:#007BFF;">Why Choose FileNest?</h2>
+
+        <div class="table-responsive">
+            <table class="table table-bordered text-center align-middle bg-white shadow-sm">
+                <thead class="table-primary">
+                    <tr>
+                        <th></th>
+                        <th>Manual Work</th>
+                        <th>FileNest AI Tool</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Summary Creation</td>
+                        <td>Slow</td>
+                        <td>Instant</td>
+                    </tr>
+                    <tr>
+                        <td>Key-Point Extraction</td>
+                        <td>Time-taking</td>
+                        <td>Automatic</td>
+                    </tr>
+                    <tr>
+                        <td>Question Generation</td>
+                        <td>Hard</td>
+                        <td>Fully Automated</td>
+                    </tr>
+                    <tr>
+                        <td>Fill-in-the-Blanks</td>
+                        <td>Manual</td>
+                        <td>Auto</td>
+                    </tr>
+                    <tr>
+                        <td>Export to PDF</td>
+                        <td>Requires Extra Tools</td>
+                        <td>Built-In</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
-      </div>
-    </div>
 
-    <div class="col-md-4">
-      <div class="card h-100 shadow-sm border-0 rounded-4">
-        <div class="card-body text-center p-4">
-          <div class="display-4 text-info mb-3">
-            <i class="bi bi-graph-up-arrow"></i>
-          </div>
-          <h5 class="fw-bold mb-2">Analytics Dashboard</h5>
-          <p class="text-muted">Track file usage, team activity, and storage performance through an elegant analytics dashboard.</p>
+    </div>
+</section>
+
+
+<!-- ===========================
+    USER BENEFITS SECTION
+=========================== -->
+<section class="py-5">
+    <div class="container">
+
+        <h2 class="fw-bold text-center mb-5" style="color:#007BFF;">User Benefits</h2>
+
+        <div class="row g-4 text-center">
+
+            <div class="col-md-3">
+                <div class="p-4 bg-white rounded shadow h-100">
+                    <div class="fs-1 mb-3">⏳</div>
+                    <h5 class="fw-bold">Save Hours of Work</h5>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="p-4 bg-white rounded shadow h-100">
+                    <div class="fs-1 mb-3">🧠</div>
+                    <h5 class="fw-bold">Improve Learning Retention</h5>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="p-4 bg-white rounded shadow h-100">
+                    <div class="fs-1 mb-3">📚</div>
+                    <h5 class="fw-bold">Create Quizzes Easily</h5>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="p-4 bg-white rounded shadow h-100">
+                    <div class="fs-1 mb-3">👥</div>
+                    <h5 class="fw-bold">Ideal for Students & Teams</h5>
+                </div>
+            </div>
+
         </div>
-      </div>
-    </div>
 
-    <div class="col-md-4">
-      <div class="card h-100 shadow-sm border-0 rounded-4">
-        <div class="card-body text-center p-4">
-          <div class="display-4 text-secondary mb-3">
-            <i class="bi bi-phone-fill"></i>
-          </div>
-          <h5 class="fw-bold mb-2">Mobile-Friendly</h5>
-          <p class="text-muted">Manage your workspace seamlessly on mobile devices — FileNest is fully responsive and intuitive.</p>
+    </div>
+</section>
+
+
+<!-- ===========================
+    SECURITY & PRIVACY SECTION
+=========================== -->
+<section class="py-5 bg-light">
+    <div class="container text-center">
+
+        <div class="p-4 bg-white shadow rounded mx-auto" style="max-width: 700px;">
+            <div class="fs-1 mb-3">🔒</div>
+            <h4 class="fw-bold">Your documents are safe with FileNest</h4>
+
+            <ul class="list-unstyled text-muted mt-3">
+                <li>Secure uploads</li>
+                <li>Automatic deletion after processing</li>
+                <li>GDPR-aligned handling</li>
+            </ul>
         </div>
-      </div>
-    </div>
-  </div>
-</div>
 
-<style>
-  body {
-    background-color: #F5F5F5;
-  }
-  .card:hover {
-    transform: translateY(-5px);
-    transition: all 0.3s ease;
-  }
-</style>
+    </div>
+</section>
+
+
+<!-- ===========================
+    CTA SECTION
+=========================== -->
+<section class="py-5 text-center">
+    <div class="container">
+        <h2 class="fw-bold mb-3" style="color:#007BFF;">Ready to try it?</h2>
+
+        <a href="/upload/" class="btn btn-primary btn-lg px-4 py-3">
+            Upload a PDF Now
+        </a>
+    </div>
+</section>
+
 {% endblock %}

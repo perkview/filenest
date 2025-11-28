@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<!-- ===========================
+    PAGE TITLE + INTRO
+=========================== -->
+<section class="py-5 text-center">
+    <div class="container">
+        <h1 class="fw-bold mb-3" style="color:#007BFF;">About Us</h1>
+        <p class="lead text-muted">
+            Learn more about our mission, vision, and team.
+        </p>
+    </div>
+</section>
+
+<!-- ===========================
+    MISSION & VISION
+=========================== -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row g-5 align-items-center">
+
+            <div class="col-md-6 text-center">
+                <div class="mb-3 fs-1 text-primary">🎯</div>
+                <h3 class="fw-bold mb-2">Our Mission</h3>
+                <p class="text-muted">
+                    To empower students, educators, and professionals by transforming PDFs into smart, actionable study packs using advanced AI.
+                </p>
+            </div>
+
+            <div class="col-md-6 text-center">
+                <div class="mb-3 fs-1 text-primary">🔮</div>
+                <h3 class="fw-bold mb-2">Our Vision</h3>
+                <p class="text-muted">
+                    To be the leading AI-powered study and productivity platform, making learning fast, efficient, and engaging.
+                </p>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ===========================
+    HOW WE WORK / PROCESS
+=========================== -->
+<section class="py-5">
+    <div class="container text-center">
+        <h2 class="fw-bold mb-4" style="color:#007BFF;">How We Work</h2>
+        <div class="row g-4 justify-content-center">
+
+            <div class="col-md-3">
+                <div class="p-4 bg-white shadow rounded">
+                    <div class="fs-2 mb-2 text-primary">📤</div>
+                    <h5 class="fw-bold mb-2">Step 1: Upload PDFs</h5>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="p-4 bg-white shadow rounded">
+                    <div class="fs-2 mb-2 text-primary">🤖</div>
+                    <h5 class="fw-bold mb-2">Step 2: AI Analyzes & Summarizes</h5>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="p-4 bg-white shadow rounded">
+                    <div class="fs-2 mb-2 text-primary">❓</div>
+                    <h5 class="fw-bold mb-2">Step 3: Generate Questions & Study Material</h5>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="p-4 bg-white shadow rounded">
+                    <div class="fs-2 mb-2 text-primary">📄</div>
+                    <h5 class="fw-bold mb-2">Step 4: Download & Learn Efficiently</h5>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ===========================
+    FINAL CTA
+=========================== -->
+<section class="py-5 text-center">
+    <div class="container">
+        <h2 class="fw-bold mb-3" style="color:#007BFF;">Ready to transform your PDFs into study packs?</h2>
+        <a href="/upload/" class="btn btn-primary btn-lg px-4 py-3">Upload PDF Now</a>
+    </div>
+</section>
+
+{% endblock %}

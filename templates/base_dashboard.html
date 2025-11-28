@@ -1,0 +1,91 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}FileNest{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+    <!-- ===========================
+    HEADER / NAVBAR
+=========================== -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+        <div class="container">
+
+            <!-- Logo -->
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <img src="{% static 'logo.png' %}" alt="FileNest Logo" height="50">
+            </a>
+
+            <!-- Navbar toggler for mobile -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+                aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Navbar links -->
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'upload_pdf' %}">Upload PDF</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'settings_page' %}">Settings</a></li>
+                </ul>
+
+                <!-- Notifications + User Avatar -->
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+    <!-- ===========================
+    PAGE CONTENT
+=========================== -->
+    <main class="py-4">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- ===========================
+    FOOTER
+=========================== -->
+    <footer class="bg-light text-center text-lg-start mt-auto shadow-sm">
+        <div class="container py-4">
+            <div class="row align-items-center">
+                <!-- Logo -->
+                <div class="col-md-3 text-center text-md-start mb-3 mb-md-0">
+                    <a href="{% url 'dashboard' %}">
+                        <img src="{% static 'images/logo.png' %}" alt="FileNest Logo" height="40" class="img-fluid">
+                    </a>
+                </div>
+
+                <!-- Footer Links -->
+                <div class="col-md-6 text-center mb-3 mb-md-0">
+                    <a class="text-muted me-3" href="{% url 'about' %}">About</a>
+                    <a class="text-muted me-3" href="{% url 'features' %}">Features</a>
+                    <a class="text-muted me-3" href="{% url 'pricing' %}">Pricing</a>
+                    <a class="text-muted me-3" href="{% url 'terms' %}">Terms</a>
+                    <a class="text-muted me-3" href="{% url 'policy' %}">Privacy</a>
+                    <a class="text-muted" href="{% url 'contact' %}">Contact</a>
+                </div>
+
+                <!-- Copyright -->
+                <div class="col-md-3 text-center text-md-end">
+                    <small class="text-muted">&copy; 2025 FileNest. All rights reserved.</small>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

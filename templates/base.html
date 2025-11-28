@@ -1,189 +1,114 @@
 {% load static %}
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>{% block title %}AI Doc Summarizer + Q&A{% endblock %}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Bootstrap 5 CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-" crossorigin="anonymous">
+    <title>FileNest</title>
 
-    <!-- Core color variables (based on your preferences) -->
-    <style>
-        :root {
-            --primary: #007BFF;
-            /* buttons, CTAs */
-            --success: #28A745;
-            /* success */
-            --danger: #FF4500;
-            /* warnings/errors */
-            --muted-bg: #F5F5F5;
-            /* light gray bg */
-            --white: #FFFFFF;
-            --text-dark: #333333;
-        }
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.png' %}">
 
-        html,
-        body {
-            height: 100%;
-        }
-
-        body {
-            font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-            color: var(--text-dark);
-            background: linear-gradient(180deg, var(--muted-bg) 0%, #ffffff 100%);
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        /* Navbar */
-        .navbar-brand {
-            font-weight: 700;
-            color: var(--primary);
-        }
-
-        .nav-link {
-            color: rgba(51, 51, 51, .8);
-        }
-
-        /* Hero */
-        .hero {
-            background: linear-gradient(90deg, rgba(0, 123, 255, 0.06), rgba(40, 167, 69, 0.03));
-            border-radius: 12px;
-            padding: 48px;
-        }
-
-        .card-feature {
-            border: none;
-            border-radius: 12px;
-            box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
-        }
-
-        /* Buttons */
-        .btn-primary {
-            background: var(--primary);
-            border-color: var(--primary);
-        }
-
-        .btn-success {
-            background: var(--success);
-            border-color: var(--success);
-        }
-
-        /* Tiny helpers */
-        .muted-small {
-            font-size: .9rem;
-            color: #6c757d
-        }
-
-        .badge-length {
-            font-weight: 600
-        }
-
-        /* Make code blocks subtle */
-        pre {
-            background: #f8f9fa;
-            padding: 1rem;
-            border-radius: 8px;
-            font-size: .92rem
-        }
-
-        /* Footer */
-        footer {
-            padding: 28px 0;
-            color: #6c757d
-        }
-
-        /* Responsive tweaks */
-        @media (max-width:767px) {
-            .hero {
-                padding: 28px
-            }
-        }
-    </style>
-
-    {% block extra_head %}{% endblock %}
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
-<body>
+<body style="background-color:#F5F5F5;">
 
-<!-- Top Navbar -->
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-    <div class="container">
-        <a class="navbar-brand" href="{% url 'home' %}">DocSummarize</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
-            aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+    <!-- ===========================
+         NAVBAR
+    ============================ -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-3">
+        <div class="container">
 
-        <div class="collapse navbar-collapse" id="mainNav">
-            <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
-                <li class="nav-item"><a class="nav-link" href="{% url 'features' %}">Features</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'how_it_works' %}">How it Works</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'security' %}">Security</a></li>
-                <li class="nav-item d-none d-lg-block"><a class="nav-link" href="{% url 'pricing' %}">Pricing</a></li>
+            <!-- Logo as Image -->
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <img src="{% static 'logo.png' %}" alt="FileNest Logo" height="50">
+            </a>
 
-                {% if user.is_authenticated %}
-                    <li class="nav-item"><a class="btn btn-outline-primary ms-3" href="{% url 'dashboard' %}">Dashboard</a></li>
-                    <li class="nav-item"><a class="btn btn-primary ms-2" href="{% url 'logout' %}">Logout</a></li>
-                {% else %}
+            <!-- Mobile Toggle -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Menu -->
+            <div class="collapse navbar-collapse" id="navMenu">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+
                     <li class="nav-item">
-                        <a href="{% url 'auth_page' %}" class="btn btn-outline-primary me-2 px-4 py-2 fw-semibold">Log In</a>
+                        <a class="nav-link" href="{% url 'home' %}" style="color:#333;">Home</a>
                     </li>
+
                     <li class="nav-item">
-                        <a href="{% url 'auth_page' %}" class="btn btn-primary px-4 py-2 fw-semibold shadow-sm">Get Started</a>
+                        <a class="nav-link" href="/features/" style="color:#333;">Features</a>
                     </li>
-                {% endif %}
-            </ul>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/pricing/" style="color:#333;">Pricing</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/contact/" style="color:#333;">Contact</a>
+                    </li>
+                </ul>
+
+                <!-- CTA Buttons -->
+                <div class="d-flex ms-lg-3 mt-3 mt-lg-0">
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'dashboard' %}" class="btn btn-primary me-2">Dashboard</a>
+                    {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-outline-primary me-2">Login</a>
+                    <a href="{% url 'sign' %}" class="btn btn-primary">Sign Up</a>
+                    {% endif %}
+                </div>
+
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
-
-    <!-- Flash messages -->
-    <div class="container mt-4">
-        {% if messages %}
-        {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        {% endfor %}
-        {% endif %}
-    </div>
-
-    <!-- Main content area -->
-    <main class="container my-5">
-        {% block hero %}
-
+    <!-- ===========================
+         PAGE CONTENT (To Be Extended)
+    ============================ -->
+    <main class="container py-5">
+        {% block content %}
         {% endblock %}
-
-        {% block content %}{% endblock %}
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-white border-top">
-        <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center">
-            <div class="py-3">
-                <strong>DocSummarize</strong> &copy; {{ now|date:"Y" }}
-                <div class="muted-small">Built with privacy-first defaults • Terms • Privacy</div>
+
+    <!-- ===========================
+         FOOTER
+    ============================ -->
+    <footer class="bg-white border-top py-4 mt-5">
+        <div class="container text-center">
+
+            <div class="mb-3">
+                <span class="fw-bold" style="color:#007BFF;">FileNest</span>
             </div>
-            <div class="py-3">
-                <a href="#" class="muted-small me-3">Contact</a>
-                <a href="#" class="muted-small me-3">Docs</a>
-                <a href="#" class="muted-small">GitHub</a>
+
+            <div class="d-flex justify-content-center gap-4 mb-3">
+                <a href="/about/" style="color:#555; text-decoration:none;">About</a>
+                <a href="/policy/" style="color:#555; text-decoration:none;">Privacy Policy</a>
+                <a href="/terms/" style="color:#555; text-decoration:none;">Terms</a>
+                <a href="/contact/" style="color:#555; text-decoration:none;">Contact</a>
             </div>
+
+            <p class="text-muted mb-0">
+                © <span id="currentYear"></span> FileNest. All rights reserved.
+            </p>
         </div>
     </footer>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity=""
-        crossorigin="anonymous"></script>
 
-    {% block extra_js %}{% endblock %}
+    <script>
+        // Get current year and insert it into the span
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+    </script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js">
+    </script>
+
 </body>
 
 </html>

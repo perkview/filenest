@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- ===========================
+    PAGE TITLE + INTRO
+=========================== -->
+<section class="py-5 text-center">
+    <div class="container">
+        <h1 class="fw-bold mb-3" style="color:#007BFF;">Welcome Back!</h1>
+        <p class="lead text-muted">
+            Login to access your PDF study packs and AI tools.
+        </p>
+    </div>
+</section>
+
+<!-- ===========================
+    LOGIN FORM
+=========================== -->
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="p-4 bg-white shadow rounded">
+
+                    <!-- Django messages -->
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} d-flex align-items-center mb-3 rounded shadow-sm" role="alert">
+                                <i class="bi bi-exclamation-circle-fill me-2"></i>
+                                {{ message }}
+                                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="POST" novalidate>
+                        {% csrf_token %}
+
+                        <!-- Email / Username -->
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Email or Username</label>
+                            <input type="text" class="form-control" id="username" name="username" placeholder="Enter email or username" required>
+                            <div class="invalid-feedback">This field is required.</div>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
+                            <div class="invalid-feedback">This field is required.</div>
+                        </div>
+
+                        <!-- Login Button -->
+                        <div class="d-grid mb-3">
+                            <button type="submit" class="btn btn-primary btn-lg">Login</button>
+                        </div>
+                    </form>
+
+                    <!-- Sign Up Prompt -->
+                    <div class="text-center mt-3">
+                        Don’t have an account? <a href="{% url 'sign' %}" class="text-primary text-decoration-none">Sign Up</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===========================
+    FORM VALIDATION SCRIPT
+=========================== -->
+<script>
+    (() => {
+        'use strict';
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
+    })();
+</script>
+
+{% endblock %}

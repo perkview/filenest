@@ -1,129 +1,241 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% load static %}
+{% block content %}
 
-{% block title %}Welcome | AI Document Summarizer + Q&A{% endblock %}
+<!-- ===========================
+     HERO SECTION
+============================ -->
+<section class="py-5">
+    <div class="container">
+        <div class="row align-items-center">
 
-{% block hero %}
-<div class="hero mb-5">
-    <div class="row align-items-center">
-        <div class="col-lg-7">
-            <h1 class="display-6 fw-bold">AI Document Summarizer & Q&A</h1>
-            <p class="lead text-muted">Instantly summarize documents, ask natural-language questions, and export insights — with privacy-first options.</p>
-            <div class="mt-4">
-                <a href="/upload/" class="btn btn-primary btn-lg me-2">Upload a document</a>
-                <a href="#how" class="btn btn-outline-secondary btn-lg">How it works</a>
+            <!-- Left Text -->
+            <div class="col-lg-6 mb-5">
+
+                <h1 class="fw-bold mb-3" style="color:#007BFF;">
+                    Transform Any PDF Into a Smart Study Pack in Seconds
+                </h1>
+
+                <p class="lead" style="color:#555;">
+                    Upload a PDF → Get a summary, key points, comprehension questions,
+                    true/false, and fill-in-the-blanks — all in one downloadable PDF.
+                </p>
+
+                <!-- Upload CTA -->
+                <a href="/upload/" class="btn btn-primary btn-lg px-4 py-3 mt-3">
+                    Upload PDF to Get Started
+                </a>
+
+                <!-- Supported Formats -->
+                <p class="mt-3 text-muted">
+                    PDF only
+                </p>
             </div>
-            <p class="muted-small mt-3">Trusted by early adopters • TLS & encryption • Local-only mode available</p>
+
+            <!-- Right Illustration -->
+            <div class="col-lg-6 text-center">
+                <img src="{% static 'home_hero.png' %}"
+                     class="img-fluid rounded shadow"
+                     alt="AI PDF Illustration">
+            </div>
+
         </div>
-        <div class="col-lg-5 d-none d-lg-block">
-            <div class="card card-feature">
-                <div class="card-body">
-                    <img src="{% static 'images/mockup-dashboard.png' %}" alt="Dashboard mockup" class="img-fluid" style="border-radius:8px;">
+    </div>
+</section>
+
+
+<!-- ===========================
+     FEATURE CARDS
+============================ -->
+<section class="py-5 bg-white">
+    <div class="container text-center">
+
+        <div class="row g-4">
+
+            <!-- Card 1 -->
+            <div class="col-md-3 col-sm-6">
+                <div class="p-4 shadow-sm rounded bg-light h-100">
+                    <div class="mb-3 fs-1">⚡</div>
+                    <h5 class="fw-bold">Instant Summary</h5>
+                    <p class="text-muted small">
+                        One-click insights generated in seconds.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="col-md-3 col-sm-6">
+                <div class="p-4 shadow-sm rounded bg-light h-100">
+                    <div class="mb-3 fs-1">📌</div>
+                    <h5 class="fw-bold">Key Points Extracted</h5>
+                    <p class="text-muted small">
+                        Clean bullet-style highlights.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="col-md-3 col-sm-6">
+                <div class="p-4 shadow-sm rounded bg-light h-100">
+                    <div class="mb-3 fs-1">📝</div>
+                    <h5 class="fw-bold">Smart Questions</h5>
+                    <p class="text-muted small">
+                        MCQs, T/F, Fill-blanks, Comprehension.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="col-md-3 col-sm-6">
+                <div class="p-4 shadow-sm rounded bg-light h-100">
+                    <div class="mb-3 fs-1">🔒</div>
+                    <h5 class="fw-bold">Secure & Fast</h5>
+                    <p class="text-muted small">
+                        Encrypted processing. Files auto-delete.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- ===========================
+     HOW IT WORKS
+============================ -->
+<section class="py-5">
+    <div class="container text-center">
+
+        <h2 class="fw-bold mb-5" style="color:#007BFF;">How It Works</h2>
+
+        <div class="row align-items-center g-4">
+
+            <!-- Step 1 -->
+            <div class="col-md-4">
+                <div class="p-4">
+                    <div class="fs-1 mb-3">📤</div>
+                    <h5 class="fw-bold">Step 1: Upload PDF</h5>
+                    <p class="text-muted small">Drag & drop or select a file.</p>
+                </div>
+            </div>
+
+            <!-- Arrow -->
+            <div class="col-md-1 d-none d-md-block fs-2">→</div>
+
+            <!-- Step 2 -->
+            <div class="col-md-4">
+                <div class="p-4">
+                    <div class="fs-1 mb-3">⚙️</div>
+                    <h5 class="fw-bold">Step 2: AI Processing</h5>
+                    <p class="text-muted small">Smart summarization & question generation.</p>
+                </div>
+            </div>
+
+            <!-- Arrow -->
+            <div class="col-md-1 d-none d-md-block fs-2">→</div>
+
+            <!-- Step 3 -->
+            <div class="col-md-4">
+                <div class="p-4">
+                    <div class="fs-1 mb-3">📥</div>
+                    <h5 class="fw-bold">Step 3: Download Pack</h5>
+                    <p class="text-muted small">Receive your full study pack instantly.</p>
                 </div>
             </div>
         </div>
-    </div>
-</div>
-{% endblock %}
 
-{% block content %}
-<!-- Features Section -->
-<section id="features" class="py-5">
-  <div class="container text-center">
-    <h2 class="fw-bold mb-4">Powerful Features to Simplify Your Work</h2>
-    <div class="row g-4">
-      <div class="col-md-4">
-        <div class="card card-feature p-4 h-100">
-          <div class="mb-3"><i class="bi bi-file-earmark-text fs-1 text-primary"></i></div>
-          <h5>Automatic Summarization</h5>
-          <p class="text-muted">Generate short, medium, or detailed summaries instantly from any PDF or document.</p>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card card-feature p-4 h-100">
-          <div class="mb-3"><i class="bi bi-chat-dots fs-1 text-success"></i></div>
-          <h5>Interactive Q&A</h5>
-          <p class="text-muted">Ask natural-language questions and get precise, cited answers with confidence scores.</p>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card card-feature p-4 h-100">
-          <div class="mb-3"><i class="bi bi-cloud-arrow-down fs-1 text-danger"></i></div>
-          <h5>Export Options</h5>
-          <p class="text-muted">Download summaries and transcripts in PDF or TXT formats with one click.</p>
-        </div>
-      </div>
+        <p class="mt-4 text-muted">
+            Built for students, teachers, researchers, and professionals who want fast insights.
+        </p>
+
     </div>
-  </div>
 </section>
 
-<!-- How It Works Section -->
-<section id="how" class="py-5 bg-light">
-  <div class="container">
-    <h2 class="fw-bold text-center mb-5">How It Works</h2>
-    <div class="row text-center g-4">
-      <div class="col-md-4">
-        <div class="p-3">
-          <div class="mb-3"><i class="bi bi-upload fs-1 text-primary"></i></div>
-          <h5>1. Upload Your Document</h5>
-          <p class="text-muted">Drag and drop or select files. Smart validation ensures supported formats and safe uploads.</p>
+
+<!-- ===========================
+     OUTPUT PREVIEW
+============================ -->
+<section class="py-5 bg-light">
+    <div class="container text-center">
+
+        <h2 class="fw-bold mb-4" style="color:#007BFF;">
+            What's inside your generated study pack?
+        </h2>
+
+        <div class="mx-auto p-4 bg-white rounded shadow" style="max-width:700px;">
+
+            <ul class="text-start mb-4" style="color:#555;">
+                <li>Executive summary</li>
+                <li>Highlighted key points</li>
+                <li>True/False questions</li>
+                <li>Fill-in-the-blanks</li>
+                <li>Comprehension questions</li>
+            </ul>
+
+            <img src="{% static 'home_preview.png' %}"
+                 class="img-fluid rounded shadow-sm" alt="Preview">
         </div>
-      </div>
-      <div class="col-md-4">
-        <div class="p-3">
-          <div class="mb-3"><i class="bi bi-lightning-charge fs-1 text-success"></i></div>
-          <h5>2. Get Summaries Instantly</h5>
-          <p class="text-muted">AI analyzes and summarizes your document in multiple modes—executive, brief, or detailed.</p>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="p-3">
-          <div class="mb-3"><i class="bi bi-question-circle fs-1 text-danger"></i></div>
-          <h5>3. Ask Questions & Export Insights</h5>
-          <p class="text-muted">Query your documents conversationally and export answers or summaries for reference.</p>
-        </div>
-      </div>
+
     </div>
-  </div>
 </section>
 
-<!-- Security Section -->
-<section id="security" class="py-5">
-  <div class="container text-center">
-    <h2 class="fw-bold mb-4">Privacy & Security You Can Trust</h2>
-    <p class="text-muted mb-5">Your documents remain private. Choose between cloud AI or local-only mode. All files are encrypted and deletable anytime.</p>
-    <div class="row justify-content-center">
-      <div class="col-md-3">
-        <div class="card p-4 shadow-sm border-0">
-          <i class="bi bi-lock fs-2 text-success mb-2"></i>
-          <h6 class="fw-bold">Encrypted Storage</h6>
-          <p class="text-muted small">All uploaded data is encrypted in transit and at rest.</p>
+
+<!-- ===========================
+     TESTIMONIALS
+============================ -->
+<section class="py-5">
+    <div class="container text-center">
+
+        <h2 class="fw-bold mb-4" style="color:#007BFF;">What Users Say</h2>
+
+        <div class="row g-4">
+
+            <div class="col-md-4">
+                <div class="p-4 bg-white shadow-sm rounded h-100">
+                    “This tool saves me hours of studying!”  
+                    <br><span class="text-muted">— Student</span>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="p-4 bg-white shadow-sm rounded h-100">
+                    “Perfect for creating quizzes quickly.”  
+                    <br><span class="text-muted">— Teacher</span>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="p-4 bg-white shadow-sm rounded h-100">
+                    “A productivity booster for document-heavy workflows.”  
+                    <br><span class="text-muted">— Researcher</span>
+                </div>
+            </div>
+
         </div>
-      </div>
-      <div class="col-md-3">
-        <div class="card p-4 shadow-sm border-0">
-          <i class="bi bi-shield-check fs-2 text-primary mb-2"></i>
-          <h6 class="fw-bold">Local-Only Mode</h6>
-          <p class="text-muted small">Keep processing on your system for complete privacy.</p>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="card p-4 shadow-sm border-0">
-          <i class="bi bi-trash3 fs-2 text-danger mb-2"></i>
-          <h6 class="fw-bold">Full Control</h6>
-          <p class="text-muted small">Easily delete data or set retention preferences from settings.</p>
-        </div>
-      </div>
+
     </div>
-  </div>
 </section>
 
-<!-- Call-to-Action Section -->
-<section class="py-5 bg-light text-center">
-  <div class="container">
-    <h2 class="fw-bold mb-4">Ready to Experience Smart Summarization?</h2>
-    <p class="text-muted mb-4">Upload your first document in seconds and see how quickly AI can transform your workflow.</p>
-    <a href="/upload/" class="btn btn-primary btn-lg">Get Started Free</a>
-  </div>
+
+<!-- ===========================
+     PRICING TEASER
+============================ -->
+<section class="py-5 bg-white text-center">
+    <div class="container">
+
+        <h3 class="fw-bold mb-3" style="color:#007BFF;">Plans for Everyone</h3>
+
+        <div class="d-flex justify-content-center gap-3 mb-4">
+            <span class="badge bg-primary p-3">Free Tier</span>
+            <span class="badge bg-warning text-dark p-3">Pro Tier</span>
+        </div>
+
+        <a href="/pricing/" class="btn btn-primary px-4 py-2">
+            View Full Pricing
+        </a>
+    </div>
 </section>
+
+
 {% endblock %}
