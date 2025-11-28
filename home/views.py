@@ -290,11 +290,23 @@ def send_contact(request):
 
 @login_required
 def process_selected(request, doc_id):
+    # -------------------------------
+    # Load API key (env or fallback)
+    # -------------------------------
+    OPENROUTER_API_KEY_ENV = os.environ.get("OPENROUTER_API_KEY")
+    OPENROUTER_API_KEY_FALLBACK = "sk-or-your_actual_key_here"  # Replace with your real key
+    OPENROUTER_API_KEY = OPENROUTER_API_KEY_ENV or OPENROUTER_API_KEY_FALLBACK
+
     if not OPENROUTER_API_KEY:
-        messages.error(request, "Server misconfiguration: OpenRouter API key is missing.")
+        messages.error(request, "Server misconfiguration: OpenRouter API key is missing!")
         return redirect("upload_pdf")
 
+    API_URL = "https://openrouter.ai/api/v1/chat/completions"
+    MODEL = "gpt-4o-mini"
+
+    # -------------------------------
     # Fetch document
+    # -------------------------------
     document = get_object_or_404(
         ProcessedDocument,
         id=doc_id,
@@ -308,10 +320,12 @@ def process_selected(request, doc_id):
     user_extra, _ = UserExtra.objects.get_or_create(user=request.user)
     now = timezone.now()
 
+    # Subscription expired or inactive
     if not user_extra.subscription_active or (user_extra.subscription_end and user_extra.subscription_end < now):
         messages.error(request, "Your subscription has expired or is inactive. Please renew to process documents.")
         return redirect("settings_page")
 
+    # Free plan daily limit: max 2 documents
     if user_extra.plan == 'free':
         today_count = ProcessedDocument.objects.filter(
             user=request.user,
@@ -368,41 +382,20 @@ def process_selected(request, doc_id):
     all_generated_text = ""
     for idx, chunk in enumerate(chunks, start=1):
         prompt = f"""
-        
 You are an AI assistant. Summarize the following text into roughly one-third of its length and generate questions that cover all key aspects.
 
 Text:
 {chunk}
 
 Tasks:
-Summarize the content into one cohesive paragraph equal to roughly one-third of the total length. Begin immediately with the core ideas—avoid phrases such as “in this text,” “in this passage,” or any similar reference. Use clean, professional language. Do not use special characters or decorative symbols such as #, *, -, or similar. Present the summary under a clear heading such as Summary, Key Insights, or Main Overview.
+Summarize the content into one cohesive paragraph equal to roughly one-third of the total length. Begin immediately with the core ideas—avoid phrases such as “in this text,” “in this passage,” or any similar reference. Use clean, professional language. Present the summary under a heading such as Summary, Key Insights, or Main Overview.
 
-After the summary, extract the essential ideas and present them concisely under a heading titled Main Points. List them in clear standalone lines without numbering or bullet symbols.
+After the summary, extract the essential ideas under a heading titled Main Points. List them in clear standalone lines.
 
-Next, generate questions that test reasoning, relationships, cause and effect, conceptual understanding, and implications. Avoid shallow prompts like “What is the topic?” or “What is the title?”. Create three categories of questions:
+Next, generate three categories of questions: Fill-in-the-blank questions, True or False questions, Comprehension questions. Each category must have its own heading, and each question must appear on a separate line without numbers or bullets.
 
-Fill-in-the-blank questions
-True or False questions
-Comprehension questions that require meaningful interpretation
-
-Each category must be presented under its own heading, and each question must appear on a separate line without numbers or bullet points.
-
-Place each question on a new line. Keep the output clean and professional.
-
-Format the response clearly.
-Formatting Rules:
-1. Each category must have its own heading exactly matching the names above.
-2. Number every question using standard numbering (1., 2., 3., etc.).
-3. Each question must appear on a separate line.
-4. Place a line break before every question by inserting the newline character "\n".
-5. Do not combine multiple questions on the same line.
-6. Do not include decorative characters, symbols, or markdown formatting.
-7. The final output must strictly follow the structure:
-8. Summary → Main Points → Fill-in-the-Blank Questions → True or False Questions → Comprehension Questions.
-9. Place a line break after every heading by inserting the newline character ": \n".
-10. Place a line break before every point in the main points by inserting the newline character "\n", also add a bullet before each point.
-
-        """
+Format the output cleanly and professionally.
+"""
 
         try:
             response = requests.post(
@@ -418,7 +411,9 @@ Formatting Rules:
                 },
                 timeout=60
             )
-            response.raise_for_status()
+            response.raise_for_status()  # Raises HTTPError if not 200
+
+            # Parse API response
             generated_text = response.json()['choices'][0]['message']['content']
             all_generated_text += f"\n\n--- Part {idx} ---\n\n{generated_text}"
 
@@ -426,7 +421,7 @@ Formatting Rules:
             messages.error(request, f"OpenRouter API error: {e}")
             return redirect("upload_pdf")
         except KeyError:
-            messages.error(request, "Unexpected API response format.")
+            messages.error(request, "Unexpected API response format from OpenRouter.")
             return redirect("upload_pdf")
 
     # -------------------------------
@@ -438,11 +433,9 @@ Formatting Rules:
     output_path = os.path.join(output_dir, output_name)
 
     c = canvas.Canvas(output_path, pagesize=letter)
-    x_margin, y_margin = 50, 12
-    line_height = 14
-    y = 750
-
+    x_margin, line_height, y = 50, 14, 750
     wrapper = textwrap.TextWrapper(width=95)
+
     for paragraph in all_generated_text.split("\n\n"):
         for line in wrapper.wrap(paragraph):
             if y < 50:
@@ -459,6 +452,7 @@ Formatting Rules:
 
     messages.success(request, "Processing complete! Download available.")
     return redirect("upload_pdf")
+
 
 
 
@@ -487,5 +481,6 @@ def settings_page(request):
 
 
     return render(request, 'settings.html', context)
+
 
 
