@@ -374,6 +374,9 @@ def process_selected(request, doc_id):
     # -------------------------------
     # Step 3: Call OpenRouter API
     # -------------------------------
+    OPENROUTER_API_KEY = "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"
+    API_URL = "https://openrouter.ai/api/v1/chat/completions"
+    MODEL = "gpt-4o-mini"
     all_generated_text = ""
     for idx, chunk in enumerate(chunks, start=1):
         prompt = f"""
@@ -487,5 +490,6 @@ def settings_page(request):
         'total_pages': total_pages,
         'generated_pdfs_count': generated_pdfs_count,
     }
+
 
     return render(request, 'settings.html', context)
