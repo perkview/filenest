@@ -382,19 +382,40 @@ def process_selected(request, doc_id):
     all_generated_text = ""
     for idx, chunk in enumerate(chunks, start=1):
         prompt = f"""
+        
 You are an AI assistant. Summarize the following text into roughly one-third of its length and generate questions that cover all key aspects.
 
 Text:
 {chunk}
 
 Tasks:
-Summarize the content into one cohesive paragraph equal to roughly one-third of the total length. Begin immediately with the core ideas—avoid phrases such as “in this text,” “in this passage,” or any similar reference. Use clean, professional language. Present the summary under a heading such as Summary, Key Insights, or Main Overview.
+Summarize the content into one cohesive paragraph equal to roughly one-third of the total length. Begin immediately with the core ideas—avoid phrases such as “in this text,” “in this passage,” or any similar reference. Use clean, professional language. Do not use special characters or decorative symbols such as #, *, -, or similar. Present the summary under a clear heading such as Summary, Key Insights, or Main Overview.
 
-After the summary, extract the essential ideas under a heading titled Main Points. List them in clear standalone lines.
+After the summary, extract the essential ideas and present them concisely under a heading titled Main Points. List them in clear standalone lines without numbering or bullet symbols.
 
-Next, generate three categories of questions: Fill-in-the-blank questions, True or False questions, Comprehension questions. Each category must have its own heading, and each question must appear on a separate line without numbers or bullets.
+Next, generate questions that test reasoning, relationships, cause and effect, conceptual understanding, and implications. Avoid shallow prompts like “What is the topic?” or “What is the title?”. Create three categories of questions:
 
-Format the output cleanly and professionally.
+Fill-in-the-blank questions
+True or False questions
+Comprehension questions that require meaningful interpretation
+
+Each category must be presented under its own heading, and each question must appear on a separate line without numbers or bullet points.
+
+Place each question on a new line. Keep the output clean and professional.
+
+Format the response clearly.
+Formatting Rules:
+1. Each category must have its own heading exactly matching the names above.
+2. Number every question using standard numbering (1., 2., 3., etc.).
+3. Each question must appear on a separate line.
+4. Place a line break before every question by inserting the newline character "\n".
+5. Do not combine multiple questions on the same line.
+6. Do not include decorative characters, symbols, or markdown formatting.
+7. The final output must strictly follow the structure:
+8. Summary → Main Points → Fill-in-the-Blank Questions → True or False Questions → Comprehension Questions.
+9. Place a line break after every heading by inserting the newline character ": \n".
+10. Place a line break before every point in the main points by inserting the newline character "\n", also add a bullet before each point.
+
 """
 
         try:
@@ -481,6 +502,7 @@ def settings_page(request):
 
 
     return render(request, 'settings.html', context)
+
 
 
 
