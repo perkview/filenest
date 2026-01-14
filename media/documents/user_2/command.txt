@@ -1,0 +1,5 @@
+sudo apt install python3-venv
+python3 -m venv venv
+source venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install PyPDF2 requests reportlab

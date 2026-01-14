@@ -1,0 +1,279 @@
+{% extends "base_dashboard.html" %}
+{% load static %}
+
+{% block title %}FileNest - AI Document Assistant{% endblock %}
+
+{% block content %}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<style>
+    body {
+        background-color: #F5F5F5;
+    }
+
+    .history-sidebar {
+        height: 70vh;
+        overflow-y: auto;
+        background: #FFF;
+        border-radius: 12px;
+        border: 1px solid #ddd;
+        padding: 20px;
+    }
+
+    .history-item {
+        padding: 10px 12px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        cursor: pointer;
+        background: #E9ECEF;
+    }
+
+    .history-item:hover {
+        background: #D1E7FF;
+    }
+
+    .history-item.active {
+        background: #BEE5FF;
+    }
+
+    .chat-container {
+        height: 50vh;
+        overflow-y: auto;
+        padding: 15px;
+        background: #FFF;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+    }
+
+    .chat-message {
+        margin-bottom: 12px;
+    }
+
+    .user-message {
+        text-align: right;
+    }
+
+    .user-message span {
+        background: #007BFF;
+        color: #fff;
+        padding: 8px 12px;
+        border-radius: 18px 18px 0 18px;
+        display: inline-block;
+        max-width: 75%;
+        word-wrap: break-word;
+    }
+
+    .ai-message span {
+        background: #E9ECEF;
+        padding: 12px 14px;
+        border-radius: 18px 18px 18px 0;
+        display: inline-block;
+        max-width: 80%;
+        line-height: 1.6;
+        font-size: 0.95rem;
+        word-wrap: break-word;
+        white-space: pre-line;
+    }
+
+
+    .action-widget {
+        position: sticky;
+        top: 20px;
+        background: #FFF;
+        border-radius: 12px;
+        padding: 15px;
+        border: 1px solid #ddd;
+        margin-top: 20px;
+    }
+
+    .doc-info {
+        background: #FFF;
+        border-radius: 12px;
+        padding: 15px;
+        border: 1px solid #ddd;
+        margin-bottom: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+</style>
+
+<div class="container my-4">
+
+    <!-- Document Info -->
+    <div id="documentInfo" class="doc-info d-none mt-3">
+        <span id="documentName" class="fw-bold"></span>
+        <a id="viewDocumentBtn" class="btn btn-outline-secondary btn-sm" target="_blank">View Document</a>
+    </div>
+
+    <div class="row g-4">
+
+        <!-- Left Sidebar: Documents -->
+        <div class="col-lg-3">
+            <div class="history-sidebar">
+                <h6 class="fw-bold mb-3 d-flex justify-content-between align-items-center">
+                    Your Documents
+                    <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#uploadModal">New
+                        Chat</button>
+                </h6>
+
+                {% if documents %}
+                {% for doc in documents %}
+                <div class="history-item d-flex justify-content-between align-items-center mb-2"
+                    data-name="{{ doc.name }}" data-url="{{ doc.file.url }}" data-doc-id="{{ doc.id }}">
+                    <span>{{ doc.name }}</span>
+                    <div class="d-flex gap-1">
+                        <a href="{{ doc.file.url }}" target="_blank" class="btn btn-outline-primary btn-sm">View</a>
+                        <form method="post" action="{% url 'delete_document' doc.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <p class="text-muted">No documents uploaded yet.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Chat Column -->
+        <div class="col-lg-9">
+            <div class="chat-container mb-3" id="chatContainer">
+                {% if messages %}
+                {% for msg in messages %}
+                <div class="chat-message {% if msg.is_user %}user-message{% else %}ai-message{% endif %}">
+                    <span style="white-space: pre-line;">
+                        {{ msg.content }}
+                    </span>
+
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="alert alert-warning text-center" role="alert">
+                    No document uploaded yet. Please upload a document to start asking questions.
+                </div>
+                {% endif %}
+            </div>
+
+            {% if selected_document %}
+            <form id="chatForm" class="d-flex gap-2">
+                <input type="text" id="chatInput" class="form-control"
+                    placeholder="Ask a question about the document or the internet...">
+                <button class="btn btn-primary px-4" type="submit">Send</button>
+            </form>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+
+<!-- Modal: Upload Document -->
+<div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="uploadForm" method="post" enctype="multipart/form-data" action="{% url 'new_chat' %}">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title" id="uploadModalLabel">Upload Document</h5>
+                </div>
+                <div class="modal-body">
+                    <input type="file" class="form-control" id="documentFile" name="file" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary w-100">Upload & Start Chat</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentDocId = {% if selected_document %}{ { selected_document.id } } {% else %} null{% endif %};
+
+    function showDocumentInfo(name, url) {
+        document.getElementById('documentName').innerText = name;
+        const viewBtn = document.getElementById('viewDocumentBtn');
+        viewBtn.href = url;
+        document.getElementById('documentInfo').classList.remove('d-none');
+    }
+
+    function loadMessages(docId) {
+        fetch(`/documents/messages/${docId}/`)
+            .then(res => res.json())
+            .then(data => {
+                const chatContainer = document.getElementById('chatContainer');
+                chatContainer.innerHTML = '';
+                data.messages.forEach(msg => {
+                    const div = document.createElement('div');
+                    div.className = 'chat-message ' + (msg.is_user ? 'user-message' : 'ai-message');
+                    div.innerHTML = `<span>${msg.content}</span>`;
+                    chatContainer.appendChild(div);
+                });
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+
+                const chatForm = document.getElementById('chatForm');
+                chatForm.onsubmit = function (e) {
+                    e.preventDefault();
+                    sendMessage(docId);
+                };
+            });
+    }
+
+    document.querySelectorAll('.history-item').forEach(item => {
+        item.addEventListener('click', function () {
+            const docId = this.dataset.docId;
+            const name = this.dataset.name;
+            const url = this.dataset.url;
+
+            currentDocId = docId;
+            showDocumentInfo(name, url);
+
+            document.querySelectorAll('.history-item').forEach(i => i.classList.remove('active'));
+            this.classList.add('active');
+
+            loadMessages(docId);
+        });
+    });
+
+    function sendMessage(docId) {
+        const input = document.getElementById('chatInput');
+        const message = input.value.trim();
+        if (!message) return;
+
+        fetch(`/send_message/${docId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `message=${encodeURIComponent(message)}`
+        })
+            .then(res => res.json())
+            .then(data => {
+                const chatContainer = document.getElementById('chatContainer');
+                chatContainer.innerHTML += `<div class="chat-message user-message"><span>${data.user_message}</span></div>`;
+                chatContainer.innerHTML += `<div class="chat-message ai-message"><span>${data.ai_message}</span></div>`;
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+                input.value = '';
+            });
+    }
+
+    {% if selected_document %}
+    showDocumentInfo("{{ selected_document.name }}", "{{ selected_document.file.url }}");
+    loadMessages({{ selected_document.id }});
+    {% endif %}
+
+    document.getElementById('uploadForm').addEventListener('submit', function (e) {
+        const fileInput = document.getElementById('documentFile');
+        if (fileInput.files.length > 0) {
+            showDocumentInfo(fileInput.files[0].name, URL.createObjectURL(fileInput.files[0]));
+            const uploadModal = bootstrap.Modal.getInstance(document.getElementById('uploadModal'));
+            if (uploadModal) uploadModal.hide();
+        }
+    });
+</script>
+
+{% endblock %}

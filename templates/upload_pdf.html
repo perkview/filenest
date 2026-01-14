@@ -43,9 +43,9 @@
                     <div class="mt-4 p-3 bg-light border rounded" style="max-height: 200px; overflow-y: auto;">
                         <h5 class="fw-bold" style="color:#007BFF;">Logs</h5>
                         {% for message in messages %}
-                            <div class="alert alert-{{ message.tags }} py-2 my-2 mb-1" role="alert">
-                                {{ message }}
-                            </div>
+                        <div class="alert alert-{{ message.tags }} py-2 my-2 mb-1" role="alert">
+                            {{ message }}
+                        </div>
                         {% endfor %}
                     </div>
                     {% endif %}
@@ -97,9 +97,9 @@
                         <!-- Processed Status -->
                         <td>
                             {% if doc.processed_count > 0 %}
-                                <span class="badge bg-success">Processed</span>
+                            <span class="badge bg-success">Processed</span>
                             {% else %}
-                                <span class="badge bg-secondary">Not Processed</span>
+                            <span class="badge bg-secondary">Not Processed</span>
                             {% endif %}
                         </td>
 
@@ -112,26 +112,26 @@
 
                             <!-- Generated PDF -->
                             {% if doc.generated_pdf %}
-                                <a href="{{ doc.generated_pdf.url }}" class="btn btn-sm btn-success w-100" download>
-                                    Generated PDF
-                                </a>
+                            <a href="{{ doc.generated_pdf.url }}" class="btn btn-sm btn-success w-100" download>
+                                Generated PDF
+                            </a>
                             {% endif %}
 
                             <!-- Optional Generated Components -->
                             {% if doc.generated_summary %}
-                                <a href="{{ doc.generated_summary.url }}" class="btn btn-sm btn-success w-100" download>
-                                    Summary
-                                </a>
+                            <a href="{{ doc.generated_summary.url }}" class="btn btn-sm btn-success w-100" download>
+                                Summary
+                            </a>
                             {% endif %}
                             {% if doc.generated_keypoints %}
-                                <a href="{{ doc.generated_keypoints.url }}" class="btn btn-sm btn-warning w-100" download>
-                                    Key Points
-                                </a>
+                            <a href="{{ doc.generated_keypoints.url }}" class="btn btn-sm btn-warning w-100" download>
+                                Key Points
+                            </a>
                             {% endif %}
                             {% if doc.generated_questions %}
-                                <a href="{{ doc.generated_questions.url }}" class="btn btn-sm btn-info w-100" download>
-                                    Questions
-                                </a>
+                            <a href="{{ doc.generated_questions.url }}" class="btn btn-sm btn-info w-100" download>
+                                Questions
+                            </a>
                             {% endif %}
                         </td>
 
@@ -172,7 +172,7 @@
         </script>
 
         {% else %}
-            <p class="text-muted">No documents uploaded yet.</p>
+        <p class="text-muted">No documents uploaded yet.</p>
         {% endif %}
     </div>
 </section>
@@ -184,7 +184,7 @@
     <div class="container text-center">
         <h4 class="fw-bold mb-3" style="color:#007BFF;">Tips for Best Results</h4>
         <ul class="list-unstyled text-muted">
-             <li>
+            <li>
                 The processing may take a while based on the document size.
                 If it still does not work, please
                 <a href="{% url 'contact' %}">contact us</a>.
@@ -197,4 +197,3 @@
 </section>
 
 {% endblock %}
-

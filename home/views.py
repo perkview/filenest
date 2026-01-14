@@ -1,14 +1,12 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .models import ContactMessage
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.db import IntegrityError
-from .models import UserExtra
 from django.utils import timezone
 from django.contrib.auth import authenticate, login as auth_login, logout
-from .models import ProcessedDocument
+from .models import UserExtra, ContactMessage, ProcessedDocument, Document, Message
 import PyPDF2
 from django.contrib.auth.decorators import login_required
 import PyPDF2
@@ -19,9 +17,11 @@ from reportlab.pdfgen import canvas
 import os
 from django.db.models import Sum, Count
 from django.contrib.auth import logout as auth_logout
+from django.shortcuts import get_object_or_404
+from django.http import JsonResponse
+import random
 
-
-OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
+OPENROUTER_API_KEY = "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"
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
 MODEL = "gpt-4o-mini"
 
@@ -290,23 +290,7 @@ def send_contact(request):
 
 @login_required
 def process_selected(request, doc_id):
-    # -------------------------------
-    # Load API key (env or fallback)
-    # -------------------------------
-    OPENROUTER_API_KEY_ENV = os.environ.get("OPENROUTER_API_KEY")
-    OPENROUTER_API_KEY_FALLBACK = "sk-or-your_actual_key_here"  # Replace with your real key
-    OPENROUTER_API_KEY = OPENROUTER_API_KEY_ENV or OPENROUTER_API_KEY_FALLBACK
-
-    if not OPENROUTER_API_KEY:
-        messages.error(request, "Server misconfiguration: OpenRouter API key is missing!")
-        return redirect("upload_pdf")
-
-    API_URL = "https://openrouter.ai/api/v1/chat/completions"
-    MODEL = "gpt-4o-mini"
-
-    # -------------------------------
-    # Fetch document
-    # -------------------------------
+    # Fetch the document
     document = get_object_or_404(
         ProcessedDocument,
         id=doc_id,
@@ -315,7 +299,7 @@ def process_selected(request, doc_id):
     )
 
     # -------------------------------
-    # Check subscription & limits
+    # Check subscription & free user limit
     # -------------------------------
     user_extra, _ = UserExtra.objects.get_or_create(user=request.user)
     now = timezone.now()
@@ -325,15 +309,16 @@ def process_selected(request, doc_id):
         messages.error(request, "Your subscription has expired or is inactive. Please renew to process documents.")
         return redirect("settings_page")
 
-    # Free plan daily limit: max 2 documents
+    # Free user daily limit: max 2 per day
     if user_extra.plan == 'free':
-        today_count = ProcessedDocument.objects.filter(
+        today = now.date()
+        processed_today = ProcessedDocument.objects.filter(
             user=request.user,
-            created_at__date=now.date(),
+            created_at__date=today,
             deleted_by_user=False
         ).count()
-        if today_count >= 2:
-            messages.error(request, "Free plan users can process a maximum of 2 documents per day. Upgrade to Pro for unlimited access.")
+        if processed_today >= 2:
+            messages.error(request, "Free plan users can only process 2 documents per day. Upgrade to Pro for unlimited processing.")
             return redirect("settings_page")
 
     pdf_path = document.pdf_file.path
@@ -342,32 +327,42 @@ def process_selected(request, doc_id):
     # Step 1: Read PDF
     # -------------------------------
     try:
+        text_content = ""
         reader = PyPDF2.PdfReader(pdf_path)
-        text_content = "\n".join(page.extract_text() or "" for page in reader.pages)
+
+        for page in reader.pages:
+            page_text = page.extract_text()
+            if page_text:
+                text_content += page_text + "\n"
 
         if not text_content.strip():
             messages.error(request, "Could not extract text from PDF.")
             return redirect("upload_pdf")
 
-        # Update document stats
-        document.num_words = len(text_content.split())
-        document.num_pages = len(reader.pages)
+        # Count words and pages
+        word_count = len(text_content.split())
+        page_count = len(reader.pages)
+
+        document.num_words = word_count
+        document.num_pages = page_count
         document.processed_count += 1
         document.save()
 
-        # Update user stats
+        # -------------------------------
+        # Update UserExtra stats
+        # -------------------------------
         user_extra.total_pdfs_processed += 1
-        user_extra.total_words_processed += document.num_words
-        user_extra.total_pages_processed += document.num_pages
-        user_extra.total_points_earned += document.num_words // 100
+        user_extra.total_words_processed += word_count
+        user_extra.total_pages_processed += page_count
+        user_extra.total_points_earned += word_count // 100
         user_extra.save()
 
     except Exception as e:
-        messages.error(request, f"PDF processing error: {e}")
+        messages.error(request, f"PDF read error: {e}")
         return redirect("upload_pdf")
 
     # -------------------------------
-    # Step 2: Split text into chunks
+    # Step 2: Split Text
     # -------------------------------
     def split_text(txt, max_words=800):
         words = txt.split()
@@ -382,7 +377,6 @@ def process_selected(request, doc_id):
     all_generated_text = ""
     for idx, chunk in enumerate(chunks, start=1):
         prompt = f"""
-        
 You are an AI assistant. Summarize the following text into roughly one-third of its length and generate questions that cover all key aspects.
 
 Text:
@@ -418,47 +412,44 @@ Formatting Rules:
 
 """
 
-        try:
-            response = requests.post(
-                API_URL,
-                headers={
-                    "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-                    "Content-Type": "application/json"
-                },
-                json={
-                    "model": MODEL,
-                    "messages": [{"role": "user", "content": prompt}],
-                    "temperature": 0.7
-                },
-                timeout=60
-            )
-            response.raise_for_status()  # Raises HTTPError if not 200
+        response = requests.post(
+            API_URL,
+            headers={
+                "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": MODEL,
+                "messages": [{"role": "user", "content": prompt}],
+                "temperature": 0.7
+            }
+        )
 
-            # Parse API response
-            generated_text = response.json()['choices'][0]['message']['content']
-            all_generated_text += f"\n\n--- Part {idx} ---\n\n{generated_text}"
+        if response.status_code != 200:
+            messages.error(request, f"API failed: {response.text}")
+            return redirect("upload_pdf")
 
-        except requests.exceptions.RequestException as e:
-            messages.error(request, f"OpenRouter API error: {e}")
-            return redirect("upload_pdf")
-        except KeyError:
-            messages.error(request, "Unexpected API response format from OpenRouter.")
-            return redirect("upload_pdf")
+        generated_text = response.json()['choices'][0]['message']['content']
+        all_generated_text += f"\n\n--- Part {idx} ---\n\n" + generated_text
 
     # -------------------------------
     # Step 4: Save Generated PDF
     # -------------------------------
-    output_dir = "media/generated_pdfs"
-    os.makedirs(output_dir, exist_ok=True)
     output_name = f"processed_{document.id}.pdf"
-    output_path = os.path.join(output_dir, output_name)
+    output_path = os.path.join("media/generated_pdfs", output_name)
+    os.makedirs("media/generated_pdfs", exist_ok=True)
 
     c = canvas.Canvas(output_path, pagesize=letter)
-    x_margin, line_height, y = 50, 14, 750
-    wrapper = textwrap.TextWrapper(width=95)
+    x_margin, y_margin = 50, 12
+    line_height = 14
+    y = 750
 
-    for paragraph in all_generated_text.split("\n\n"):
-        for line in wrapper.wrap(paragraph):
+    wrapper = textwrap.TextWrapper(width=95)
+    paragraphs = all_generated_text.split("\n\n")
+
+    for paragraph in paragraphs:
+        lines = wrapper.wrap(paragraph)
+        for line in lines:
             if y < 50:
                 c.showPage()
                 y = 750
@@ -473,8 +464,6 @@ Formatting Rules:
 
     messages.success(request, "Processing complete! Download available.")
     return redirect("upload_pdf")
-
-
 
 
 @login_required(login_url='/login/')
@@ -500,9 +489,254 @@ def settings_page(request):
         'generated_pdfs_count': generated_pdfs_count,
     }
 
-
     return render(request, 'settings.html', context)
 
 
 
+
+
+@login_required
+def document(request):
+    """
+    Document page view:
+    - Fetch all non-deleted documents of the user.
+    - Select the latest document by default.
+    - Fetch messages for the selected document only, in proper order.
+    """
+    documents = Document.objects.filter(user=request.user, is_deleted=False).order_by('-uploaded_at')
+    selected_document = documents.first() if documents.exists() else None
+
+    messages = (
+        selected_document.messages.filter(is_deleted=False).order_by('order', 'created_at')
+        if selected_document else []
+    )
+
+    return render(request, 'document.html', {
+        'documents': documents,
+        'selected_document': selected_document,
+        'messages': messages
+    })
+
+@login_required
+def send_message(request, doc_id):
+    """
+    Handles sending a chat message for a specific document.
+    Saves the user message and generates an AI response using OpenRouter.
+    Includes full chat history and reads PDF documents correctly.
+    """
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid request"}, status=400)
+
+    # -------------------------------
+    # Fetch document
+    # -------------------------------
+    doc = get_object_or_404(Document, id=doc_id, user=request.user, is_deleted=False)
+    user_content = request.POST.get("message", "").strip()
+
+    if not user_content:
+        return JsonResponse({"error": "Message cannot be empty"}, status=400)
+
+    # -------------------------------
+    # Save user message
+    # -------------------------------
+    user_msg = Message.objects.create(
+        document=doc,
+        user=request.user,
+        content=user_content,
+        is_user=True
+    )
+
+    # -------------------------------
+    # Fetch conversation history
+    # -------------------------------
+    history_qs = doc.messages.filter(is_deleted=False).order_by('created_at', 'order')
+    history_text = ""
+    for msg in history_qs:
+        role = "User" if msg.is_user else "Assistant"
+        history_text += f"{role}: {msg.content}\n"
+
+    # -------------------------------
+    # Read document content (PDF / TXT)
+    # -------------------------------
+    document_text = ""
+
+    try:
+        file_name = doc.file.name.lower()
+
+        # PDF handling
+        if file_name.endswith(".pdf"):
+            reader = PyPDF2.PdfReader(doc.file)
+            for page in reader.pages:
+                text = page.extract_text()
+                if text:
+                    document_text += text + "\n"
+
+        # TXT or other text-based files
+        else:
+            document_text = doc.file.read().decode("utf-8", errors="ignore")
+
+    except Exception:
+        document_text = ""
+
+    # -------------------------------
+    # Prepare AI prompt
+    # -------------------------------
+    prompt = (
+        "You are an AI document assistant.\n\n"
+        "Document Content:\n"
+        f"{document_text}\n\n"
+        "Conversation History:\n"
+        f"{history_text}\n"
+        "User Question:\n"
+        f"{user_content}\n\n"
+        "Answer clearly, accurately, and concisely using the document and conversation context.\n"
+        """
+        Format the final answer strictly as follows:
+
+        Start with a short title that summarizes the answer.
+
+        Then add a blank line.
+
+        Then write the explanation in short, well-structured paragraphs.
+        Each paragraph must be separated by a blank line.
+
+        If listing points:
+        - Use short dash-style points
+        - One point per line
+        - No numbering
+        - No special symbols
+
+        Do not use markdown.
+        Do not use emojis.
+        Do not use headings with symbols.
+        Keep language professional and simple.
+
+        """
+    )
+
+    # -------------------------------
+    # Call OpenRouter API
+    # -------------------------------
+    try:
+        response = requests.post(
+            "https://openrouter.ai/api/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": "gpt-4o-mini",
+                "messages": [
+                    {"role": "user", "content": prompt}
+                ],
+                "temperature": 0.7
+            },
+            timeout=20
+        )
+
+        response.raise_for_status()
+        ai_content = response.json()["choices"][0]["message"]["content"]
+
+    except Exception:
+        ai_content = "Sorry for the inconvenience, an error occurred. Please try again."
+
+    # -------------------------------
+    # Save AI message
+    # -------------------------------
+    ai_msg = Message.objects.create(
+        document=doc,
+        user=None,
+        content=ai_content,
+        is_user=False
+    )
+
+    # -------------------------------
+    # Return response
+    # -------------------------------
+    return JsonResponse({
+        "user_message": user_msg.content,
+        "ai_message": ai_msg.content
+    })
+
+
+
+
+@login_required
+def get_messages(request, doc_id):
+    """
+    Returns all messages for a specific document as JSON.
+    Used for dynamically loading chats via AJAX.
+    """
+    doc = get_object_or_404(Document, id=doc_id, user=request.user, is_deleted=False)
+    messages_qs = doc.messages.filter(is_deleted=False).order_by('order', 'created_at')
+
+    messages = [
+        {"id": msg.id, "content": msg.content, "is_user": msg.is_user}
+        for msg in messages_qs
+    ]
+
+    return JsonResponse({"messages": messages})
+
+
+
+
+@login_required
+def new_chat(request):
+    """
+    Handle document upload from 'New Chat' modal.
+    Saves the document for the logged-in user and
+    initializes the chat with a random AI welcome message.
+    """
+    if request.method == 'POST' and request.FILES.get('file'):
+        uploaded_file = request.FILES['file']
+        
+        # Create Document object
+        doc = Document.objects.create(
+            user=request.user,
+            file=uploaded_file,
+            name=uploaded_file.name
+        )
+        
+        # List of initializer AI messages
+        initializer_messages = [
+            f"Hi! I’ve analyzed your document and ready to assist you with it.",
+            f"Hi there! I can help you with the contents of your document.",
+            f"Your document is ready. I’m here to answer questions and provide insights.",
+            f"Greetings! I’ve reviewed the uploaded document and can help you understand or summarize it.",
+            f"Welcome! I’m ready to help you with your document '{doc.name}'. Ask me anything about it."
+        ]
+        
+        # Pick a random initializer message
+        ai_message = random.choice(initializer_messages)
+        
+        # Save initial AI message
+        Message.objects.create(
+            document=doc,
+            user=None,
+            content=ai_message,
+            is_user=False
+        )
+        
+        # Redirect back to main document page
+        return redirect('document')
+    
+    # If GET or no file, redirect back
+    return redirect('document')
+
+
+
+@login_required
+def delete_document(request, doc_id):
+    """
+    Soft-delete a document by marking is_deleted=True.
+    Only allows the owner to delete their document.
+    """
+    doc = get_object_or_404(Document, id=doc_id, user=request.user)
+    
+    # Soft delete
+    doc.is_deleted = True
+    doc.save()
+    
+    # Redirect back to the main document page
+    return redirect('document')
 

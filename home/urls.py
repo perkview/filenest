@@ -18,7 +18,12 @@ urlpatterns = [
     path("process-selected/<int:doc_id>/", views.process_selected, name="process_selected"),
     path('logout/', views.custom_logout, name='logout'),
     path('settings/', views.settings_page, name='settings_page'),
-
+    path('document/', views.document, name='document'),
+    path('new_chat/', views.new_chat, name='new_chat'), # New Chat upload
+    path('delete_document/<int:doc_id>/', views.delete_document, name='delete_document'),  # Soft-delete
+    path('send_message/<int:doc_id>/', views.send_message, name='send_message'),
+    path('send_message/<int:doc_id>/', views.send_message, name='send_message'),  # Send user + AI message
+    path('documents/messages/<int:doc_id>/', views.get_messages, name='get_messages'),  # Fetch messages via AJAX
 
     path('notifications/', views.home, name='notifications'),
     path('pdf/<int:pdf_id>/view/', views.home, name='view_pdf'),
