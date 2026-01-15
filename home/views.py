@@ -20,8 +20,9 @@ from django.contrib.auth import logout as auth_logout
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 import random
+from django.db import transaction
 
-OPENROUTER_API_KEY = "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"
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
 MODEL = "gpt-4o-mini"
 
@@ -517,71 +518,73 @@ def document(request):
         'messages': messages
     })
 
+
+
 @login_required
 def send_message(request, doc_id):
-    """
-    Handles sending a chat message for a specific document.
-    Saves the user message and generates an AI response using OpenRouter.
-    Includes full chat history and reads PDF documents correctly.
-    """
+
     if request.method != "POST":
         return JsonResponse({"error": "Invalid request"}, status=400)
 
-    # -------------------------------
-    # Fetch document
-    # -------------------------------
-    doc = get_object_or_404(Document, id=doc_id, user=request.user, is_deleted=False)
-    user_content = request.POST.get("message", "").strip()
+    doc = get_object_or_404(
+        Document,
+        id=doc_id,
+        user=request.user,
+        is_deleted=False
+    )
 
+    user_content = request.POST.get("message", "").strip()
     if not user_content:
         return JsonResponse({"error": "Message cannot be empty"}, status=400)
 
-    # -------------------------------
-    # Save user message
-    # -------------------------------
-    user_msg = Message.objects.create(
-        document=doc,
-        user=request.user,
-        content=user_content,
-        is_user=True
-    )
+    with transaction.atomic():
 
-    # -------------------------------
-    # Fetch conversation history
-    # -------------------------------
-    history_qs = doc.messages.filter(is_deleted=False).order_by('created_at', 'order')
-    history_text = ""
-    for msg in history_qs:
-        role = "User" if msg.is_user else "Assistant"
-        history_text += f"{role}: {msg.content}\n"
+        # -----------------------------
+        # Save user message
+        # -----------------------------
+        user_msg = Message.objects.create(
+            document=doc,
+            user=request.user,
+            content=user_content,
+            is_user=True
+        )
 
-    # -------------------------------
-    # Read document content (PDF / TXT)
-    # -------------------------------
-    document_text = ""
+        # -----------------------------
+        # Build conversation history
+        # -----------------------------
+        history_qs = (
+            doc.messages
+            .filter(is_deleted=False)
+            .order_by("created_at")
+        )
 
-    try:
-        file_name = doc.file.name.lower()
+        history_text = ""
+        for msg in history_qs:
+            role = "User" if msg.is_user else "Assistant"
+            history_text += f"{role}: {msg.content}\n"
 
-        # PDF handling
-        if file_name.endswith(".pdf"):
-            reader = PyPDF2.PdfReader(doc.file)
-            for page in reader.pages:
-                text = page.extract_text()
-                if text:
-                    document_text += text + "\n"
-
-        # TXT or other text-based files
-        else:
-            document_text = doc.file.read().decode("utf-8", errors="ignore")
-
-    except Exception:
+        # -----------------------------
+        # Read document content safely
+        # -----------------------------
         document_text = ""
 
-    # -------------------------------
-    # Prepare AI prompt
-    # -------------------------------
-    prompt = (
+        try:
+            with doc.file.open("rb") as f:
+                if doc.file.name.lower().endswith(".pdf"):
+                    reader = PyPDF2.PdfReader(f)
+                    for page in reader.pages:
+                        page_text = page.extract_text()
+                        if page_text:
+                            document_text += page_text + "\n"
+                else:
+                    document_text = f.read().decode("utf-8", errors="ignore")
+        except Exception:
+            document_text = ""
+
+        # -----------------------------
+        # AI Prompt (HTML-safe output)
+        # -----------------------------
+        prompt = (
         "You are an AI document assistant.\n\n"
         "Document Content:\n"
         f"{document_text}\n\n"
@@ -612,47 +615,55 @@ def send_message(request, doc_id):
         Keep language professional and simple.
 
         """
-    )
-
-    # -------------------------------
-    # Call OpenRouter API
-    # -------------------------------
-    try:
-        response = requests.post(
-            "https://openrouter.ai/api/v1/chat/completions",
-            headers={
-                "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-                "Content-Type": "application/json"
-            },
-            json={
-                "model": "gpt-4o-mini",
-                "messages": [
-                    {"role": "user", "content": prompt}
-                ],
-                "temperature": 0.7
-            },
-            timeout=20
         )
 
-        response.raise_for_status()
-        ai_content = response.json()["choices"][0]["message"]["content"]
+        # -----------------------------
+        # Call OpenRouter
+        # -----------------------------
+        if not OPENROUTER_API_KEY:
+            raise ValueError("OPENROUTER_API_KEY is not set")
 
-    except Exception:
-        ai_content = "Sorry for the inconvenience, an error occurred. Please try again."
+        try:
+            response = requests.post(
+                "https://openrouter.ai/api/v1/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "model": "gpt-4o-mini",
+                    "messages": [
+                        {"role": "user", "content": prompt}
+                    ],
+                    "temperature": 0.6,
+                },
+                timeout=20,
+            )
 
-    # -------------------------------
-    # Save AI message
-    # -------------------------------
-    ai_msg = Message.objects.create(
-        document=doc,
-        user=None,
-        content=ai_content,
-        is_user=False
-    )
+            response.raise_for_status()
+            ai_content = response.json()["choices"][0]["message"]["content"].strip()
 
-    # -------------------------------
-    # Return response
-    # -------------------------------
+        except Exception as e:
+            print("AI ERROR:", str(e))  # Visible in console / Render logs
+
+            ai_content = (
+                "I am ready to assist you with this document. "
+                "Please ask your question again or try a different one."
+            )
+
+        # -----------------------------
+        # Save AI message
+        # -----------------------------
+        ai_msg = Message.objects.create(
+            document=doc,
+            user=None,
+            content=ai_content,
+            is_user=False
+        )
+
+    # -----------------------------
+    # Frontend-compatible response
+    # -----------------------------
     return JsonResponse({
         "user_message": user_msg.content,
         "ai_message": ai_msg.content
@@ -702,7 +713,7 @@ def new_chat(request):
             f"Hi! I’ve analyzed your document and ready to assist you with it.",
             f"Hi there! I can help you with the contents of your document.",
             f"Your document is ready. I’m here to answer questions and provide insights.",
-            f"Greetings! I’ve reviewed the uploaded document and can help you understand or summarize it.",
+            f"Greetings! I’ve reviewed the uploaded document and can help you understand or summarize it or anything you want.",
             f"Welcome! I’m ready to help you with your document '{doc.name}'. Ask me anything about it."
         ]
         

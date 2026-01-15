@@ -190,8 +190,9 @@
     </div>
 </div>
 
+
 <script>
-    let currentDocId = {% if selected_document %}{ { selected_document.id } } {% else %} null{% endif %};
+    let currentDocId = {% if selected_document %}{{ selected_document.id }}{% else %}null{% endif %};
 
     function showDocumentInfo(name, url) {
         document.getElementById('documentName').innerText = name;
@@ -200,25 +201,41 @@
         document.getElementById('documentInfo').classList.remove('d-none');
     }
 
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.innerText = text;
+        return div.innerHTML;
+    }
+
     function loadMessages(docId) {
         fetch(`/documents/messages/${docId}/`)
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) throw new Error('Failed to load messages');
+                return res.json();
+            })
             .then(data => {
                 const chatContainer = document.getElementById('chatContainer');
                 chatContainer.innerHTML = '';
+
                 data.messages.forEach(msg => {
                     const div = document.createElement('div');
                     div.className = 'chat-message ' + (msg.is_user ? 'user-message' : 'ai-message');
-                    div.innerHTML = `<span>${msg.content}</span>`;
+                    div.innerHTML = `<span style="white-space: pre-line;">${escapeHtml(msg.content)}</span>`;
                     chatContainer.appendChild(div);
                 });
+
                 chatContainer.scrollTop = chatContainer.scrollHeight;
 
                 const chatForm = document.getElementById('chatForm');
-                chatForm.onsubmit = function (e) {
-                    e.preventDefault();
-                    sendMessage(docId);
-                };
+                if (chatForm) {
+                    chatForm.onsubmit = function (e) {
+                        e.preventDefault();
+                        sendMessage(docId);
+                    };
+                }
+            })
+            .catch(() => {
+                alert('Unable to load messages.');
             });
     }
 
@@ -240,6 +257,8 @@
 
     function sendMessage(docId) {
         const input = document.getElementById('chatInput');
+        if (!input) return;
+
         const message = input.value.trim();
         if (!message) return;
 
@@ -251,29 +270,49 @@
             },
             body: `message=${encodeURIComponent(message)}`
         })
-            .then(res => res.json())
-            .then(data => {
-                const chatContainer = document.getElementById('chatContainer');
-                chatContainer.innerHTML += `<div class="chat-message user-message"><span>${data.user_message}</span></div>`;
-                chatContainer.innerHTML += `<div class="chat-message ai-message"><span>${data.ai_message}</span></div>`;
-                chatContainer.scrollTop = chatContainer.scrollHeight;
-                input.value = '';
-            });
+        .then(res => {
+            if (!res.ok) throw new Error();
+            return res.json();
+        })
+        .then(data => {
+            const chatContainer = document.getElementById('chatContainer');
+
+            chatContainer.insertAdjacentHTML(
+                'beforeend',
+                `<div class="chat-message user-message">
+                    <span>${escapeHtml(data.user_message)}</span>
+                </div>
+                <div class="chat-message ai-message">
+                    <span style="white-space: pre-line;">${escapeHtml(data.ai_message)}</span>
+                </div>`
+            );
+
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            input.value = '';
+        })
+        .catch(() => {
+            alert('Message failed. Please try again.');
+        });
     }
 
     {% if selected_document %}
-    showDocumentInfo("{{ selected_document.name }}", "{{ selected_document.file.url }}");
-    loadMessages({{ selected_document.id }});
+        showDocumentInfo("{{ selected_document.name }}", "{{ selected_document.file.url }}");
+        loadMessages({{ selected_document.id }});
     {% endif %}
 
-    document.getElementById('uploadForm').addEventListener('submit', function (e) {
-        const fileInput = document.getElementById('documentFile');
-        if (fileInput.files.length > 0) {
-            showDocumentInfo(fileInput.files[0].name, URL.createObjectURL(fileInput.files[0]));
-            const uploadModal = bootstrap.Modal.getInstance(document.getElementById('uploadModal'));
-            if (uploadModal) uploadModal.hide();
-        }
-    });
+    const uploadForm = document.getElementById('uploadForm');
+    if (uploadForm) {
+        uploadForm.addEventListener('submit', function () {
+            const fileInput = document.getElementById('documentFile');
+            if (fileInput.files.length > 0) {
+                showDocumentInfo(
+                    fileInput.files[0].name,
+                    URL.createObjectURL(fileInput.files[0])
+                );
+            }
+        });
+    }
 </script>
+
 
 {% endblock %}
