@@ -141,7 +141,8 @@ STATICFILES_DIRS = [
 
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = BASE_DIR / 'media'
+
 
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/dashboard/'
@@ -161,3 +162,4 @@ CSRF_TRUSTED_ORIGINS = [
 
 
 load_dotenv(BASE_DIR / ".env")
+
