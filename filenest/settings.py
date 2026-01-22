@@ -140,8 +140,13 @@ STATICFILES_DIRS = [
 ]
 
 
+
+MEDIA_ROOT = '/home/yourusername/fileuploads/'
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+
+
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
 
 
 LOGIN_URL = '/login/'
@@ -162,4 +167,5 @@ CSRF_TRUSTED_ORIGINS = [
 
 
 load_dotenv(BASE_DIR / ".env")
+
 
